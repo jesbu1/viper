@@ -194,7 +194,7 @@ def print_size():
     print(dt.tree.tree_.node_count)
 
 if __name__ == '__main__':
-    input_args = dict(
+    input_args = AttrDict(
         env_task = "stairClim_sparse",
         max_depth  = 12,
         n_batch_rollouts = 10,
