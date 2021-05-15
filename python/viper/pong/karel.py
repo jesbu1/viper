@@ -132,6 +132,7 @@ def learn_dt(input_args):
     train_frac = custom_args.train_frac
     is_reweight = custom_args.is_reweight
     run_name = _generate_run_name(custom_args, input_args.pop("id"), input_args.pop("repeat"))
+    os.mkdir(f"../data/{run_name}")
     log_fname = f'../data/{run_name}/karel_dt.log'
     model_path = f'../data/{run_name}/saved'
     n_test_rollouts = 50
