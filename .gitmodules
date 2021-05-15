@@ -1,3 +1,3 @@
 [submodule "pytorch-a2c-ppo-acktr-gail"]
-	path = pytorch-a2c-ppo-acktr-gail
+	path = python/viper/pong/pytorch-a2c-ppo-acktr-gail
 	url = git@github.com:dweeptrivedi/pytorch-a2c-ppo-acktr-gail.git
