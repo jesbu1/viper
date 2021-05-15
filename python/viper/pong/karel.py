@@ -26,7 +26,7 @@ environments = [
                 'fourCorners',
                 'harvester',
                 'randomMaze',
-                'stairClim_sparse',
+                'stairClimber_sparse',
                 'topOff',
                 ]
 env_to_hw = dict(
@@ -34,7 +34,7 @@ env_to_hw = dict(
     fourCorners=(12, 12),
     harvester=(8, 8),
     randomMaze=(8, 8),
-    stairClim_sparse=(12, 12),
+    stairClimber_sparse=(12, 12),
     topOff=(12, 12),
 )
 env_to_time = dict(
@@ -42,7 +42,7 @@ env_to_time = dict(
     fourCorners=100,
     harvester=100,
     randomMaze=100,
-    stairClim_sparse=100,
+    stairClimber_sparse=100,
     topOff=100,
 )
 
