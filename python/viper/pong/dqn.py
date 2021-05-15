@@ -17,7 +17,7 @@ import tensorflow.contrib.layers as layers
 
 # As described in https://storage.googleapis.com/deepmind-data/assets/papers/DeepMindNature14236Paper.pdf
 class DQNPolicy:
-    def __init__(self, env, model_path):
+    def __init__(self, env, model_path, convolutional=True):
         # Setup
         self.env = env
         self.model_path = model_path
@@ -38,21 +38,30 @@ class DQNPolicy:
 
                 # Q-function
                 with tf.variable_scope('q_func'):
-                    # Normalization
-                    out = tf.cast(self.imgs, tf.float32) / 255.0
+                    if convolutional:
+                        # Normalization
+                        out = tf.cast(self.imgs, tf.float32) / 255.0
 
-                    # Convolutions
-                    with tf.variable_scope('convnet'):
-                        out = layers.convolution2d(out, num_outputs=32, kernel_size=8, stride=4, activation_fn=tf.nn.relu)
-                        out = layers.convolution2d(out, num_outputs=64, kernel_size=4, stride=2, activation_fn=tf.nn.relu)
-                        out = layers.convolution2d(out, num_outputs=64, kernel_size=3, stride=1, activation_fn=tf.nn.relu)
+                        # Convolutions
+                        with tf.variable_scope('convnet'):
+                            out = layers.convolution2d(out, num_outputs=32, kernel_size=8, stride=4, activation_fn=tf.nn.relu)
+                            out = layers.convolution2d(out, num_outputs=64, kernel_size=4, stride=2, activation_fn=tf.nn.relu)
+                            out = layers.convolution2d(out, num_outputs=64, kernel_size=3, stride=1, activation_fn=tf.nn.relu)
 
-                    # Flatten
-                    conv_out = layers.flatten(out)
+                        # Flatten
+                        conv_out = layers.flatten(out)
+                    else:
+                        out = layers.fully_connected(self.imgs, num_outputs = 100, activation_fn=None)
+                        out = tf.nn.relu(out)
+                        out = layers.fully_connected(out, num_outputs = 100, activation_fn=None)
+                        conv_out= tf.nn.relu(out)
 
                     # Fully connected
                     with tf.variable_scope('action_value'):
-                        value_out = layers.fully_connected(conv_out, num_outputs=512, activation_fn=None)
+                        if convolutional:
+                            value_out = layers.fully_connected(conv_out, num_outputs=512, activation_fn=None)
+                        else:
+                            value_out = layers.fully_connected(conv_out, num_outputs=100, activation_fn=None)
                         value_out = tf.nn.relu(value_out)
                         value_out = layers.fully_connected(value_out, num_outputs=self.num_actions, activation_fn=None)
 
