@@ -144,7 +144,6 @@ def learn_dt(input_args):
     set_file(log_fname)
     
     # Data structures
-    env = KarelGymEnv()
     teacher = DQNPolicy(env, model_path, convolutional=False)
     student = DTPolicy(max_depth)
     state_transformer = lambda x: x
