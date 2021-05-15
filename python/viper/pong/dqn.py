@@ -29,7 +29,7 @@ class DQNPolicy:
         with self.graph.as_default():
             with tf.variable_scope('deepq'):
                 # Observations
-                self.imgs = tf.placeholder(tf.uint8, [None] + list(self.input_shape), name='observation')
+                self.imgs = tf.placeholder(tf.uint8 if convolutional else tf.float32, [None] + list(self.input_shape), name='observation')
 
                 # Randomness
                 self.stochastic_ph = tf.placeholder(tf.bool, (), name='stochastic')
