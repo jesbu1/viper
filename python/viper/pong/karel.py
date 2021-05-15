@@ -195,7 +195,7 @@ def print_size():
 
 if __name__ == '__main__':
     input_args = AttrDict(
-        env_task = "stairClim_sparse",
+        env_task = "stairClimber_sparse",
         max_depth  = 12,
         n_batch_rollouts = 10,
         max_samples = 200000,
