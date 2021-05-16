@@ -79,5 +79,5 @@ def learn_q(input_args):
 
 if __name__ == '__main__':
     input_args = AttrDict()
-    input_args.env_task = "randomMaze"
+    input_args.env_task = "harvester"
     learn_q(input_args)
