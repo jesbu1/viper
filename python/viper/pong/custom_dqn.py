@@ -112,6 +112,7 @@ class DQN(nn.Module):
         while num_timesteps < self.num_timesteps:
             # Initialize the environment and state
             state = torch.from_numpy(self.env.reset()).float().unsqueeze(0)
+            cum_reward = 0
             for t in count():
                 # Select and perform an action
                 if np.random.random() < self.epsilon:  
@@ -120,7 +121,9 @@ class DQN(nn.Module):
                     with torch.no_grad():
                         action = torch.argmax(self.predict(state), -1).view(1, 1)
                 next_state, reward, done, _ = self.env.step(action.item())
+                num_timesteps += 1
                 next_state = torch.from_numpy(next_state).float().unsqueeze(0)
+                cum_reward += reward
                 reward = torch.tensor([reward], device=device).float()
 
                 # Observe new state
@@ -137,11 +140,12 @@ class DQN(nn.Module):
                 self.optimize_model()
                 if self.epsilon > 0.01:      
                     self.epsilon -= 0.001
+                # Update the target network, copying all weights and biases in DQN
+                if num_timesteps % TARGET_UPDATE == 0:
+                    self.q_target.load_state_dict(self.q.state_dict())
                 if done:
+                    print(cum_reward)
                     break
-            # Update the target network, copying all weights and biases in DQN
-            if num_timesteps % TARGET_UPDATE == 0:
-                self.q_target.load_state_dict(self.q.state_dict())
 
         torch.save(self.state_dict(), self.model_path)
 
