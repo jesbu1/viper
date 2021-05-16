@@ -3,6 +3,7 @@ import random
 import torch.nn as nn
 from itertools import count
 import torch
+import pickle
 
 import numpy as np
 device = 'cpu'
@@ -30,6 +31,7 @@ class DQN(nn.Module):
     def __init__(self, env, model_path=None, train=False):
         super(DQN, self).__init__()
         self.env = env
+        self.eval_env = pickle.loads(pickle.dumps(env))
         self.model_path = model_path
         self.num_actions = env.action_space.n
         self.input_shape = env.observation_space.shape[0]
@@ -106,6 +108,28 @@ class DQN(nn.Module):
     def reset_hidden(self):
         self.gru_hidden_state = torch.zeros((self.batch_size, self.hidden_size))
 
+    def eval(self, num_evals=10):
+        avg_reward = 0
+        for eval in num_evals:
+            state = torch.from_numpy(self.eval_env.reset()).float().unsqueeze(0)
+            cum_reward = 0
+            for t in count():
+                # Select and perform an action
+                with torch.no_grad():
+                    action = torch.argmax(self.predict(state), -1).view(1, 1)
+                next_state, reward, done, _ = self.eval_env.step(action.item())
+                next_state = torch.from_numpy(next_state).float().unsqueeze(0)
+                cum_reward += reward
+                reward = torch.tensor([reward], device=device).float()
+                
+                # Move to the next state
+                state = next_state
+            avg_reward += cum_reward
+        return avg_reward / num_evals
+
+
+
+
     def interact(self):
         TARGET_UPDATE = 1000
         num_timesteps = 0
@@ -143,8 +167,10 @@ class DQN(nn.Module):
                 # Update the target network, copying all weights and biases in DQN
                 if num_timesteps % TARGET_UPDATE == 0:
                     self.q_target.load_state_dict(self.q.state_dict())
+                if num_timesteps % 10000 == 0:
+                    eval_rew = self.eval()
+                    print(f"Timesteps: {num_timesteps}, Eval reward: {eval_rew}")
                 if done:
-                    print(f"Timesteps: {num_timesteps}, Latest reward: {cum_reward}")
                     break
         torch.save(self.state_dict(), self.model_path)
 
