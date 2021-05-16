@@ -118,7 +118,7 @@ class DQN(nn.Module):
                     action = torch.tensor([[random.randrange(self.num_actions)]], device=device, dtype=torch.long)
                 else:                             
                     with torch.no_grad():
-                        action = torch.argmax(self.predict(state.unsqueeze(0)), -1, keepdim=True)
+                        action = torch.argmax(self.predict(state.unsqueeze(0)), -1).view(1, 1)
                 next_state, reward, done, _ = self.env.step(action.item())
                 next_state = torch.from_numpy(next_state).float()
                 reward = torch.tensor([reward], device=device)
