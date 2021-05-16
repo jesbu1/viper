@@ -20,7 +20,7 @@ from .dqn import *
 from ..core.dt import *
 from ..util.log import *
 from collections import Iterable
-from .train_dqn_karel import DQN
+from .custom_dqn import DQN
 import random
 
 environments = [
