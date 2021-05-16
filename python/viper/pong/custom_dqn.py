@@ -124,6 +124,9 @@ class DQN(nn.Module):
                 
                 # Move to the next state
                 state = next_state
+                
+                if done:
+                    break
             avg_reward += cum_reward
         return avg_reward / num_evals
 
