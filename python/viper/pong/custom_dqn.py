@@ -110,7 +110,7 @@ class DQN(nn.Module):
 
     def eval(self, num_evals=10):
         avg_reward = 0
-        for eval in num_evals:
+        for eval in range(num_evals):
             state = torch.from_numpy(self.eval_env.reset()).float().unsqueeze(0)
             cum_reward = 0
             for t in count():
