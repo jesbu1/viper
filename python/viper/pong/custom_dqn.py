@@ -120,7 +120,6 @@ class DQN(nn.Module):
                 next_state, reward, done, _ = self.eval_env.step(action.item())
                 next_state = torch.from_numpy(next_state).float().unsqueeze(0)
                 cum_reward += reward
-                reward = torch.tensor([reward], device=device).float()
                 
                 # Move to the next state
                 state = next_state
@@ -151,7 +150,7 @@ class DQN(nn.Module):
                 num_timesteps += 1
                 next_state = torch.from_numpy(next_state).float().unsqueeze(0)
                 cum_reward += reward
-                reward = torch.tensor([reward], device=device).float()
+                reward = torch.tensor([reward]).float()
 
                 # Observe new state
                 if done:
