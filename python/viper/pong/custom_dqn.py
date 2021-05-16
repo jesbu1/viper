@@ -115,9 +115,9 @@ class DQN(nn.Module):
             for t in count():
                 # Select and perform an action
                 if np.random.random() < self.epsilon:  
-                    action = self.env.action_space.sample()
+                    action = torch.tensor([[random.randrange(self.num_actions)]], device=device, dtype=torch.long)
                 else:                             
-                    action = self.predict(state.unsqueeze(0))[0].item()
+                    action = torch.max(self.predict(state.unsqueeze(0)), -1)
                 next_state, reward, done, _ = self.env.step(action.item())
                 next_state = torch.from_numpy(next_state, device=device)
                 reward = torch.tensor([reward], device=device)
