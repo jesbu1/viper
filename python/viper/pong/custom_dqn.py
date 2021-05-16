@@ -78,7 +78,7 @@ class DQN(nn.Module):
                 # env.render()
                 
                 # Feedforward pass for current state to get predicted q-values for all actions 
-                qvals_s = self.predict_q(s.unsqueeze(0))
+                qvals_s = self.predict_q(np.expand_dims(s, 0))
                 qvals_s = qvals_s[0].item()
                 # Choose action to be epsilon-greedy
                 if np.random.random() < self.epsilon:  
