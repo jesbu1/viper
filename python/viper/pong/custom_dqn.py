@@ -111,7 +111,7 @@ class DQN(nn.Module):
         num_timesteps = 0
         while num_timesteps < self.num_timesteps:
             # Initialize the environment and state
-            state = torch.from_numpy(self.env.reset())
+            state = torch.from_numpy(self.env.reset()).float()
             for t in count():
                 # Select and perform an action
                 if np.random.random() < self.epsilon:  
