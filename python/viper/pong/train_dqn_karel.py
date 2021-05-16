@@ -70,7 +70,8 @@ def learn_q(input_args):
     config.update(args) 
     env = KarelGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
-    os.makedirs(f"../data/saved_dqn/karel/{env_task}")
+    if not os.path.exists(f"../data/saved_dqn/karel/{env_task}"):
+        os.makedirs(f"../data/saved_dqn/karel/{env_task}")
     model_path = f'../data/saved_dqn/karel/{env_task}/saved'
     q_func = DQN(env=env, model_path=model_path, train=True)
     q_func.interact()
