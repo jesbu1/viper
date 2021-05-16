@@ -121,7 +121,7 @@ class DQN(nn.Module):
                         action = torch.argmax(self.predict(state), -1).view(1, 1)
                 next_state, reward, done, _ = self.env.step(action.item())
                 next_state = torch.from_numpy(next_state).float().unsqueeze(0)
-                reward = torch.tensor([reward], device=device)
+                reward = torch.tensor([reward], device=device).float()
 
                 # Observe new state
                 if done:
