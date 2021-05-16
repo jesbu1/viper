@@ -1,7 +1,30 @@
+from collections import deque, namedtuple
+import random
 import torch.nn as nn
+from itertools import count
 import torch
 
 import numpy as np
+device = 'cpu'
+
+Transition = namedtuple('Transition',
+                        ('state', 'action', 'next_state', 'reward'))
+
+
+class ReplayMemory(object):
+
+    def __init__(self, capacity):
+        self.memory = deque([],maxlen=capacity)
+
+    def push(self, *args):
+        """Save a transition"""
+        self.memory.append(Transition(*args))
+
+    def sample(self, batch_size):
+        return random.sample(self.memory, batch_size)
+
+    def __len__(self):
+        return len(self.memory)
 
 class DQN(nn.Module):
     def __init__(self, env, model_path=None, train=False):
@@ -16,6 +39,16 @@ class DQN(nn.Module):
         self.gamma=0.99
         self.hidden_size=100
         self.mem_max_size=100000
+        self.q = self.build_network()
+        self.q_target = self.build_network()
+        if model_path and not train:
+            self.load_state_dict(torch.load(model_path))
+        self.model_path = model_path
+        self.gru_hidden_state = torch.zeros((self.batch_size, self.hidden_size))
+        self.memory = ReplayMemory(capacity=self.mem_max_size)
+        self.optimizer = torch.optim.Adam(self.q.parameters())
+
+    def build_network(self):
         #q_module_list = [nn.GRUCell(input_size=self.input_shape, hidden_size=self.hidden_size, bias=True)]
         q_module_list = [nn.Linear(in_features=self.input_shape, out_features=self.hidden_size)]
         q_module_list.append(nn.ReLU())
@@ -23,85 +56,92 @@ class DQN(nn.Module):
             q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.hidden_size))
             q_module_list.append(nn.ReLU())
         q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))
-        self.q = nn.Sequential(*q_module_list)
-        if model_path and not train:
-            self.load_state_dict(torch.load(model_path))
-        self.model_path = model_path
-        self.gru_hidden_state = torch.zeros((self.batch_size, self.hidden_size))
-        self.replay_memory=[]
-        self.optimizer = torch.optim.Adam(self.q.parameters())
+        return nn.Sequential(*q_module_list)
+
+    def optimize_model(self):
+        if len(self.memory) < self.batch_size:
+            return
+        transitions = self.memory.sample(self.batch_size)
+        # Transpose the batch (see https://stackoverflow.com/a/19343/3343043 for
+        # detailed explanation). This converts batch-array of Transitions
+        # to Transition of batch-arrays.
+        batch = Transition(*zip(*transitions))
+
+        # Compute a mask of non-final states and concatenate the batch elements
+        # (a final state would've been the one after which simulation ended)
+        non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
+                                            batch.next_state)), device=device, dtype=torch.bool)
+        non_final_next_states = torch.cat([s for s in batch.next_state
+                                                    if s is not None])
+        state_batch = torch.cat(batch.state)
+        action_batch = torch.cat(batch.action)
+        reward_batch = torch.cat(batch.reward)
+
+        # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
+        # columns of actions taken. These are the actions which would've been taken
+        # for each batch state according to policy_net
+        state_action_values = self.q(state_batch).gather(1, action_batch)
+
+        # Compute V(s_{t+1}) for all next states.
+        # Expected values of actions for non_final_next_states are computed based
+        # on the "older" target_net; selecting their best reward with max(1)[0].
+        # This is merged based on the mask, such that we'll have either the expected
+        # state value or 0 in case the state was final.
+        next_state_values = torch.zeros(self.batch_size, device=device)
+        next_state_values[non_final_mask] = self.q_target(non_final_next_states).max(1)[0].detach()
+        # Compute the expected Q values
+        expected_state_action_values = (next_state_values * self.gamma) + reward_batch
+
+        # Compute Huber loss
+        criterion = nn.SmoothL1Loss()
+        loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))
+
+        # Optimize the model
+        self.optimizer.zero_grad()
+        loss.backward()
+        for param in self.q.parameters():
+            param.grad.data.clamp_(-1, 1)
+        self.optimizer.step()
 
     def reset_hidden(self):
         self.gru_hidden_state = torch.zeros((self.batch_size, self.hidden_size))
 
-    def replay(self):
-        # choose <s,a,r,s',done> experiences randomly from the memory
-        minibatch = np.random.choice(self.replay_memory, self.batch_size, replace=True)
-        # create one list containing s, one list containing a, etc
-        s_l =      torch.from_numpy(np.array(list(map(lambda x: x['s'], minibatch)))).float()
-        a_l =      torch.from_numpy(np.array(list(map(lambda x: x['a'], minibatch)))).float()
-        r_l =      torch.from_numpy(np.array(list(map(lambda x: x['r'], minibatch)))).float()
-        sprime_l = torch.from_numpy(np.array(list(map(lambda x: x['sprime'], minibatch)))).float()
-        done_l   = torch.from_numpy(np.array(list(map(lambda x: x['done'], minibatch))))
-        # Find q(s', a') for all possible actions a'. Store in list
-        # We'll use the maximum of these values for q-update  
-        qvals_sprime_l = self.predict_q(sprime_l)
-        # Find q(s,a) for all possible actions a. Store in list
-        target_f = self.predict_q(s_l)
-        # q-update target
-        # For the action we took, use the q-update value  
-        # For other actions, use the current nnet predicted value
-        for i,(s,a,r,qvals_sprime, done) in enumerate(zip(s_l,a_l,r_l,qvals_sprime_l, done_l)): 
-            if not done:  
-                target = r + self.gamma * torch.max(qvals_sprime)
-            else:         
-                target = r
-            target_f[i][a] = target
-        # Update weights of neural network with fit() 
-        # Loss function is 0 for actions we didn't take
-        self.train(s_l, target_f)
-
-    def train(self, s_l, target_f):
-        self.optimizer.zero_grad()
-        loss = torch.mean((s_l - target_f)**2)
-        loss.backward()
-        self.optimizer.step()
-
     def interact(self):
-        timesteps = 0
-        while timesteps < self.num_timesteps:
-            s = self.env.reset()
-            done=False
-            r_sum = 0
-            while not done: 
-                # Uncomment this to see the agent learning
-                # env.render()
-                
-                # Feedforward pass for current state to get predicted q-values for all actions 
-                with torch.no_grad():
-                    qvals_s = self.predict_q(torch.from_numpy(s).unsqueeze(0).float())
-                qvals_s = qvals_s.numpy()
-                # Choose action to be epsilon-greedy
+        TARGET_UPDATE = 1000
+        num_timesteps = 0
+        while num_timesteps < self.num_timesteps:
+            # Initialize the environment and state
+            state = torch.from_numpy(self.env.reset())
+            for t in count():
+                # Select and perform an action
                 if np.random.random() < self.epsilon:  
-                    a = self.env.action_space.sample()
+                    action = self.env.action_space.sample()
                 else:                             
-                    a = np.argmax(qvals_s); 
-                # Take step, store results 
-                sprime, r, done, info = self.env.step(a)
-                timesteps += 1
-                r_sum += r 
-                # add to memory, respecting memory buffer limit 
-                if len(self.replay_memory) > self.mem_max_size:
-                    self.replay_memory.pop(0)
-                self.replay_memory.append({"s":s,"a":a,"r":r,"sprime":sprime,"done":done})
-                # Update state
-                s=sprime
-                # Train the nnet that approximates q(s,a), using the replay memory
-                self.replay()
-                # Decrease epsilon until we hit a target threshold 
+                    action = self.predict(state.unsqueeze(0))[0].item()
+                next_state, reward, done, _ = self.env.step(action.item())
+                next_state = torch.from_numpy(next_state, device=device)
+                reward = torch.tensor([reward], device=device)
+
+                # Observe new state
+                if done:
+                    next_state = None
+
+                # Store the transition in memory
+                self.memory.push(state, action, next_state, reward)
+
+                # Move to the next state
+                state = next_state
+
+                # Perform one step of the optimization (on the policy network)
+                self.optimize_model()
                 if self.epsilon > 0.01:      
                     self.epsilon -= 0.001
-            print("Total reward:", r_sum)
+                if done:
+                    break
+            # Update the target network, copying all weights and biases in DQN
+            if num_timesteps % TARGET_UPDATE == 0:
+                self.q_target.load_state_dict(self.q.state_dict())
+
         torch.save(self.state_dict(), self.model_path)
 
     def predict_q(self, obs):
