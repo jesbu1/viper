@@ -78,8 +78,9 @@ class DQN(nn.Module):
                 # env.render()
                 
                 # Feedforward pass for current state to get predicted q-values for all actions 
-                qvals_s = self.predict_q(np.expand_dims(s, 0))
-                qvals_s = qvals_s[0].item()
+                with torch.no_grad():
+                    qvals_s = self.predict_q(torch.from_numpy(s).unsqueeze(0))
+                qvals_s = qvals_s.numpy()
                 # Choose action to be epsilon-greedy
                 if np.random.random() < self.epsilon:  
                     a = self.env.action_space.sample()
