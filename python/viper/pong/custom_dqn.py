@@ -79,7 +79,7 @@ class DQN(nn.Module):
                 
                 # Feedforward pass for current state to get predicted q-values for all actions 
                 with torch.no_grad():
-                    qvals_s = self.predict_q(torch.from_numpy(s).unsqueeze(0))
+                    qvals_s = self.predict_q(torch.from_numpy(s).unsqueeze(0).float())
                 qvals_s = qvals_s.numpy()
                 # Choose action to be epsilon-greedy
                 if np.random.random() < self.epsilon:  
