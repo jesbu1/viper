@@ -5,6 +5,7 @@ import numpy as np
 
 class DQN(nn.Module):
     def __init__(self, env, model_path=None, train=False):
+        super(DQN, self).__init__()
         self.env = env
         self.model_path = model_path
         self.num_actions = env.action_space.n
