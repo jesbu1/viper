@@ -144,9 +144,8 @@ class DQN(nn.Module):
                 if num_timesteps % TARGET_UPDATE == 0:
                     self.q_target.load_state_dict(self.q.state_dict())
                 if done:
-                    print(cum_reward)
+                    print(f"Timesteps: {num_timesteps}, Latest reward: {cum_reward}")
                     break
-
         torch.save(self.state_dict(), self.model_path)
 
     def predict_q(self, obs):
