@@ -36,7 +36,7 @@ class DQN(nn.Module):
         self.num_actions = env.action_space.n
         self.input_shape = env.observation_space.shape[0]
         self.batch_size=256
-        self.epsilon=0.1
+        self.epsilon=0.9
         self.num_timesteps=1e6
         self.gamma=0.99
         self.hidden_size=100
@@ -46,7 +46,7 @@ class DQN(nn.Module):
         if model_path and not train:
             self.load_state_dict(torch.load(model_path))
         self.model_path = model_path
-        self.gru_hidden_state = torch.zeros((self.batch_size, self.hidden_size))
+        #self.gru_hidden_state = torch.zeros((self.batch_size, self.hidden_size))
         self.memory = ReplayMemory(capacity=self.mem_max_size)
         self.optimizer = torch.optim.Adam(self.q.parameters())
 
@@ -116,7 +116,7 @@ class DQN(nn.Module):
             for t in count():
                 # Select and perform an action
                 with torch.no_grad():
-                    action = torch.argmax(self.predict(state), -1).view(1, 1)
+                    action = self.predict(state).view(1, 1)
                 next_state, reward, done, _ = self.eval_env.step(action.item())
                 next_state = torch.from_numpy(next_state).float().unsqueeze(0)
                 cum_reward += reward
@@ -146,7 +146,7 @@ class DQN(nn.Module):
                     action = torch.tensor([[random.randrange(self.num_actions)]], device=device, dtype=torch.long)
                 else:                             
                     with torch.no_grad():
-                        action = torch.argmax(self.predict(state), -1).view(1, 1)
+                        action = self.predict(state).view(1, 1)
                 next_state, reward, done, _ = self.env.step(action.item())
                 num_timesteps += 1
                 next_state = torch.from_numpy(next_state).float().unsqueeze(0)
@@ -165,8 +165,6 @@ class DQN(nn.Module):
 
                 # Perform one step of the optimization (on the policy network)
                 self.optimize_model()
-                if self.epsilon > 0.01:      
-                    self.epsilon -= 0.001
                 # Update the target network, copying all weights and biases in DQN
                 if num_timesteps % TARGET_UPDATE == 0:
                     self.q_target.load_state_dict(self.q.state_dict())
@@ -175,6 +173,8 @@ class DQN(nn.Module):
                     print(f"Timesteps: {num_timesteps}, Eval reward: {eval_rew}")
                 if done:
                     break
+            if self.epsilon > 0.01:      
+                self.epsilon -= 0.001
         torch.save(self.state_dict(), self.model_path)
 
     def predict_q(self, obs):
