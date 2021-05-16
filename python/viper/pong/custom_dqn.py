@@ -38,10 +38,10 @@ class DQN(nn.Module):
         # choose <s,a,r,s',done> experiences randomly from the memory
         minibatch = np.random.choice(self.replay_memory, self.batch_size, replace=True)
         # create one list containing s, one list containing a, etc
-        s_l =      torch.from_numpy(np.array(list(map(lambda x: x['s'], minibatch))))
-        a_l =      torch.from_numpy(np.array(list(map(lambda x: x['a'], minibatch))))
-        r_l =      torch.from_numpy(np.array(list(map(lambda x: x['r'], minibatch))))
-        sprime_l = torch.from_numpy(np.array(list(map(lambda x: x['sprime'], minibatch))))
+        s_l =      torch.from_numpy(np.array(list(map(lambda x: x['s'], minibatch)))).float()
+        a_l =      torch.from_numpy(np.array(list(map(lambda x: x['a'], minibatch)))).float()
+        r_l =      torch.from_numpy(np.array(list(map(lambda x: x['r'], minibatch)))).float()
+        sprime_l = torch.from_numpy(np.array(list(map(lambda x: x['sprime'], minibatch)))).float()
         done_l   = torch.from_numpy(np.array(list(map(lambda x: x['done'], minibatch))))
         # Find q(s', a') for all possible actions a'. Store in list
         # We'll use the maximum of these values for q-update  
