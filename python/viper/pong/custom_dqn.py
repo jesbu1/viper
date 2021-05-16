@@ -38,11 +38,11 @@ class DQN(nn.Module):
         # choose <s,a,r,s',done> experiences randomly from the memory
         minibatch = np.random.choice(self.replay_memory, self.batch_size, replace=True)
         # create one list containing s, one list containing a, etc
-        s_l =      np.array(list(map(lambda x: x['s'], minibatch)))
-        a_l =      np.array(list(map(lambda x: x['a'], minibatch)))
-        r_l =      np.array(list(map(lambda x: x['r'], minibatch)))
-        sprime_l = np.array(list(map(lambda x: x['sprime'], minibatch)))
-        done_l   = np.array(list(map(lambda x: x['done'], minibatch)))
+        s_l =      torch.from_numpy(np.array(list(map(lambda x: x['s'], minibatch))))
+        a_l =      torch.from_numpy(np.array(list(map(lambda x: x['a'], minibatch))))
+        r_l =      torch.from_numpy(np.array(list(map(lambda x: x['r'], minibatch))))
+        sprime_l = torch.from_numpy(np.array(list(map(lambda x: x['sprime'], minibatch))))
+        done_l   = torch.from_numpy(np.array(list(map(lambda x: x['done'], minibatch))))
         # Find q(s', a') for all possible actions a'. Store in list
         # We'll use the maximum of these values for q-update  
         qvals_sprime_l = self.predict_q(sprime_l)
@@ -53,13 +53,19 @@ class DQN(nn.Module):
         # For other actions, use the current nnet predicted value
         for i,(s,a,r,qvals_sprime, done) in enumerate(zip(s_l,a_l,r_l,qvals_sprime_l, done_l)): 
             if not done:  
-                target = r + self.gamma * np.max(qvals_sprime)
+                target = r + self.gamma * torch.max(qvals_sprime)
             else:         
                 target = r
             target_f[i][a] = target
         # Update weights of neural network with fit() 
         # Loss function is 0 for actions we didn't take
-        self.train(s_l, target_f, epochs=1, verbose=0)
+        self.train(s_l, target_f)
+
+    def train(self, s_l, target_f):
+        self.optimizer.zero_grad()
+        loss = torch.mean((s_l - target_f)**2)
+        loss.backward()
+        self.optimizer.step()
 
     def interact(self):
         timesteps = 0
@@ -72,7 +78,8 @@ class DQN(nn.Module):
                 # env.render()
                 
                 # Feedforward pass for current state to get predicted q-values for all actions 
-                qvals_s = self.predict(s.reshape(1,4))
+                qvals_s = self.predict_q(s.unsqueeze(0))
+                qvals_s = qvals_s[0].item()
                 # Choose action to be epsilon-greedy
                 if np.random.random() < self.epsilon:  
                     a = self.env.action_space.sample()
@@ -80,6 +87,7 @@ class DQN(nn.Module):
                     a = np.argmax(qvals_s); 
                 # Take step, store results 
                 sprime, r, done, info = self.env.step(a)
+                timesteps += 1
                 r_sum += r 
                 # add to memory, respecting memory buffer limit 
                 if len(self.replay_memory) > self.mem_max_size:
