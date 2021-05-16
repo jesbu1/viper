@@ -8,7 +8,7 @@ class DQN(nn.Module):
         self.env = env
         self.model_path = model_path
         self.num_actions = env.action_space.n
-        self.input_shape = env.observation_space.shape
+        self.input_shape = env.observation_space.shape[0]
         self.batch_size=32
         self.epsilon=0.1
         self.num_timesteps=1e6
