@@ -41,8 +41,8 @@ class DQN(nn.Module):
         self.gamma=0.99
         self.hidden_size=100
         self.mem_max_size=100000
-        self.q = self.build_network()
-        self.q_target = self.build_network()
+        self.q = self.build_network().to(device)
+        self.q_target = self.build_network().to(device)
         if model_path and not train:
             self.load_state_dict(torch.load(model_path))
         self.model_path = model_path
@@ -72,12 +72,12 @@ class DQN(nn.Module):
         # Compute a mask of non-final states and concatenate the batch elements
         # (a final state would've been the one after which simulation ended)
         non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
-                                            batch.next_state)), device=device, dtype=torch.bool)
+                                            batch.next_state)), device=device, dtype=torch.bool).to(device)
         non_final_next_states = torch.cat([s for s in batch.next_state
-                                                    if s is not None])
-        state_batch = torch.cat(batch.state)
-        action_batch = torch.cat(batch.action)
-        reward_batch = torch.cat(batch.reward)
+                                                    if s is not None]).to(device)
+        state_batch = torch.cat(batch.state).to(device)
+        action_batch = torch.cat(batch.action).to(device)
+        reward_batch = torch.cat(batch.reward).to(device)
 
         # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
         # columns of actions taken. These are the actions which would've been taken
@@ -178,8 +178,8 @@ class DQN(nn.Module):
         torch.save(self.state_dict(), self.model_path)
 
     def predict_q(self, obs):
-        return self.q(obs)
+        return self.q(obs.to(device))
 
     def predict(self, obs):
-        acts = torch.argmax(self.q(obs), -1)
+        acts = torch.argmax(self.q(obs.to(device)), -1)
         return acts
