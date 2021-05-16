@@ -72,7 +72,7 @@ class DQN(nn.Module):
                 # env.render()
                 
                 # Feedforward pass for current state to get predicted q-values for all actions 
-                qvals_s = model.predict(s.reshape(1,4))
+                qvals_s = self.predict(s.reshape(1,4))
                 # Choose action to be epsilon-greedy
                 if np.random.random() < self.epsilon:  
                     a = self.env.action_space.sample()
@@ -88,7 +88,7 @@ class DQN(nn.Module):
                 # Update state
                 s=sprime
                 # Train the nnet that approximates q(s,a), using the replay memory
-                model=self.replay()
+                self.replay()
                 # Decrease epsilon until we hit a target threshold 
                 if self.epsilon > 0.01:      
                     self.epsilon -= 0.001
