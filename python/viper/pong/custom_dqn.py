@@ -133,7 +133,7 @@ class DQN(nn.Module):
 
 
     def interact(self):
-        TARGET_UPDATE = 1000
+        TARGET_UPDATE = 3000
         num_timesteps = 0
         while num_timesteps < self.num_timesteps:
             # Initialize the environment and state
@@ -170,10 +170,10 @@ class DQN(nn.Module):
                 if num_timesteps % 10000 == 0:
                     eval_rew = self.eval()
                     print(f"Timesteps: {num_timesteps}, Eval reward: {eval_rew}")
+                if self.epsilon > 0.01:      
+                    self.epsilon -= 0.00001
                 if done:
                     break
-            if self.epsilon > 0.01:      
-                self.epsilon -= 0.001
         torch.save(self.state_dict(), self.model_path)
 
     def predict_q(self, obs):
