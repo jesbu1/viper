@@ -177,6 +177,7 @@ class DQN(nn.Module):
         torch.save(self.state_dict(), self.model_path)
 
     def predict_q(self, obs):
+        import pdb; pdb.set_trace()
         if isinstance(obs, np.ndarray):
             obs = torch.from_numpy(obs).float()
             return self.q(obs).detach().numpy()
