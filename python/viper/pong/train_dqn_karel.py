@@ -58,7 +58,7 @@ def learn_q(input_args):
     env_task = input_args.env_task
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
-                max_episode_steps=100,
+                max_episode_steps=env_to_time[env_task],
                 obv_type='local',
                 wall_prob=0.25,
                 height=env_to_hw[env_task][0],
@@ -78,6 +78,7 @@ def learn_q(input_args):
     
 
 if __name__ == '__main__':
-    input_args = AttrDict()
-    input_args.env_task = "harvester"
-    learn_q(input_args)
+    for env in environments:
+        input_args = AttrDict()
+        input_args.env_task = env
+        learn_q(input_args)

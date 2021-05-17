@@ -111,7 +111,7 @@ def learn_dt(input_args):
     env_task = input_args.env_task
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
-                max_episode_steps=100,
+                max_episode_steps=env_to_time[env_task],
                 obv_type='local',
                 wall_prob=0.25,
                 height=env_to_hw[env_task][0],
