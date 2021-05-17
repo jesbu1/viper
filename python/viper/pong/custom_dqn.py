@@ -185,6 +185,8 @@ class DQN(nn.Module):
         return self.q(obs.to(device))
 
     def predict(self, obs):
+        if isinstance(obs, list):
+            obs = np.array(obs)
         if isinstance(obs, np.ndarray):
             obs = torch.from_numpy(obs).float()
             return torch.argmax(self.q(obs.to(device)), -1).detach().numpy()
