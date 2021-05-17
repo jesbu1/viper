@@ -52,9 +52,18 @@ class DQN(nn.Module):
 
     def build_network(self):
         #q_module_list = [nn.GRUCell(input_size=self.input_shape, hidden_size=self.hidden_size, bias=True)]
-        q_module_list = [nn.Linear(in_features=self.input_shape, out_features=self.hidden_size)]
+        #q_module_list = [nn.Linear(in_features=self.input_shape, out_features=self.hidden_size)]
+        #q_module_list.append(nn.ReLU())
+        #for i in range(3):
+        #    q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.hidden_size))
+        #    q_module_list.append(nn.ReLU())
+        #q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))
+        q_module_list = [nn.Conv2d(in_channels=16, out_channels=32, kernel_size=2)]
         q_module_list.append(nn.ReLU())
-        for i in range(3):
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
+        q_module_list.append(nn.ReLU())
+        q_module_list.append(nn.Flatten())
+        for i in range(1):
             q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.hidden_size))
             q_module_list.append(nn.ReLU())
         q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))

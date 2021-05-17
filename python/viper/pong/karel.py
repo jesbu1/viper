@@ -23,7 +23,7 @@ import random
 from itertools import product
 
 environments = [
-                #'cleanHouse',
+                'cleanHouse',
                 'fourCorners',
                 'harvester',
                 'randomMaze',

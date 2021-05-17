@@ -140,7 +140,6 @@ def train_dagger(env, teacher, student, state_transformer, max_iters, n_batch_ro
     trace = get_rollouts(env, teacher, False, n_batch_rollouts)
     obss.extend((state_transformer(obs) for obs, _, _ in trace))
     acts.extend((act for _, act, _ in trace))
-    import pdb; pdb.set_trace()
     qs.extend(teacher.predict_q(np.array([obs for obs, _, _ in trace])))
 
     # Step 2: Dagger outer loop

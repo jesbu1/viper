@@ -22,6 +22,39 @@ from ..util.log import *
 from collections import Iterable
 from .custom_dqn import DQN
 import random
+import gym
+from gym.spaces import Box
+
+class KarelEnvWrapper(gym.Wrapper):
+    def __init__(self, env=None, op=[2, 0, 1]):
+        """
+        Transpose observation space for images
+        """
+        gym.Wrapper.__init__(self, env)
+        assert len(op) == 3, "Error: Operation, " + str(op) + ", must be dim3"
+        self.op = op
+        obs_shape = self.observation_space.shape
+        if len(obs_shape) == 3:
+            self.observation_space = Box(
+                self.observation_space.low[0, 0, 0],
+                self.observation_space.high[0, 0, 0], [
+                    obs_shape[self.op[0]], obs_shape[self.op[1]],
+                    obs_shape[self.op[2]]
+                ],
+                dtype=self.observation_space.dtype)
+
+    def step(self, action):
+        ob, reward, done, info = self.env.step(action)
+        return self.observation(ob.astype(np.float32)), float(reward), done, {}
+
+    def reset(self):
+        ob = self.observation(np.array(self.env.reset(), dtype=np.float32))
+        return ob
+
+    def observation(self, ob):
+        if len(self.observation_space.shape) == 3:
+            return np.transpose(ob, (self.op[0], self.op[1], self.op[2]))
+        return ob
 
 environments = [
                 'cleanHouse',
@@ -59,7 +92,7 @@ def learn_q(input_args):
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
                 max_episode_steps=env_to_time[env_task],
-                obv_type='local',
+                obv_type='global',
                 wall_prob=0.25,
                 height=env_to_hw[env_task][0],
                 width=env_to_hw[env_task][1],
@@ -70,6 +103,7 @@ def learn_q(input_args):
     config.update(args) 
     env = KarelGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
+    env = KarelEnvWrapper(env)
     if not os.path.exists(f"../data/saved_dqn/karel/{env_task}"):
         os.makedirs(f"../data/saved_dqn/karel/{env_task}")
     model_path = f'../data/saved_dqn/karel/{env_task}/saved'
