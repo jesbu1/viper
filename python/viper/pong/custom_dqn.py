@@ -6,7 +6,7 @@ import torch
 import pickle
 
 import numpy as np
-device = 'cuda'
+device = 'cpu'
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'next_state', 'reward'))
