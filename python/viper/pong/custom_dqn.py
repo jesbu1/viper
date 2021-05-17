@@ -179,12 +179,12 @@ class DQN(nn.Module):
     def predict_q(self, obs):
         if isinstance(obs, np.ndarray):
             obs = torch.from_numpy(obs).float()
-            return self.q(obs).numpy()
+            return self.q(obs).detach().numpy()
         return self.q(obs.to(device))
 
     def predict(self, obs):
         if isinstance(obs, np.ndarray):
             obs = torch.from_numpy(obs).float()
-            return torch.argmax(self.q(obs.to(device)), -1).numpy()
+            return torch.argmax(self.q(obs.to(device)), -1).detach().numpy()
         acts = torch.argmax(self.q(obs.to(device)), -1)
         return acts
