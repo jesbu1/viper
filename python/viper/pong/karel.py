@@ -209,7 +209,7 @@ if __name__ == '__main__':
             max_depth  = d,
             n_batch_rollouts = n,
             max_samples = s,
-            max_iters = i,
+            max_iters = 80,
             train_frac = 0.8,
             is_reweight = i,
             id=0,
