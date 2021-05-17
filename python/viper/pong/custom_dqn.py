@@ -65,9 +65,9 @@ class DQN(nn.Module):
             q_module_list.append(nn.ReLU())
             q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
             q_module_list.append(nn.ReLU())
-            q_module_list.append(nn.Flatten())
             test_conv = nn.Sequential(*q_module_list)
             flat_size = self._infer_flat_size(test_conv)
+            q_module_list.append(nn.Flatten())
             for i in range(1):
                 q_module_list.append(nn.Linear(in_features=flat_size, out_features=self.hidden_size))
                 q_module_list.append(nn.ReLU())
