@@ -18,6 +18,7 @@ from .karel import *
 from ..core.dt import *
 from ..util.log import *
 from .custom_dqn import DQN
+from .train_dqn_karel import KarelEnvWrapper
 from collections import Iterable
 import random
 from itertools import product
@@ -124,6 +125,7 @@ def learn_dt(input_args):
     config.update(args) 
     env = KarelGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
+    env = KarelEnvWrapper(env)
     custom_args = AttrDict()
     id=input_args.pop("id")
     repeat=input_args.pop("repeat")
@@ -165,37 +167,6 @@ def learn_dt(input_args):
     rew = test_policy(env, student, state_transformer, n_test_rollouts)
     log('Final reward: {}'.format(rew), INFO)
     log('Number of nodes: {}'.format(student.tree.tree_.node_count), INFO)
-
-def bin_acts():
-    # Parameters
-    seq_len = 10
-    n_rollouts = 10
-    log_fname = 'karel_options.log'
-    model_path = 'model-karel-1/saved'
-    
-    # Logging
-    set_file(log_fname)
-    
-    # Data structures
-    env = KarelGymEnv(config)
-    teacher = DQNPolicy(env, model_path)
-
-    # Action sequences
-    seqs = get_action_sequences(env, teacher, seq_len, n_rollouts)
-
-    for seq, count in seqs:
-        log('{}: {}'.format(seq, count), INFO)
-
-def print_size():
-    # Parameters
-    dirname = 'results/run9'
-    fname = 'dt_policy.pk'
-
-    # Load decision tree
-    dt = load_dt_policy(dirname, fname)
-
-    # Size
-    print(dt.tree.tree_.node_count)
 
 if __name__ == '__main__':
     #max_depth = [6, 12, 15]

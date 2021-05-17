@@ -28,21 +28,24 @@ class ReplayMemory(object):
         return len(self.memory)
 
 class DQN(nn.Module):
-    def __init__(self, env, model_path=None, train=False):
+    def __init__(self, env, model_path=None, train=False, conv=False):
         super(DQN, self).__init__()
         self.env = env
         self.eval_env = pickle.loads(pickle.dumps(env))
         self.model_path = model_path
         self.num_actions = env.action_space.n
-        self.input_shape = env.observation_space.shape[0]
+        if conv:
+            self.input_shape = env.observation_space.shape
+        else:
+            self.input_shape = env.observation_space.shape[0]
         self.batch_size=256
         self.epsilon=0.9
         self.num_timesteps=1e6
         self.gamma=0.99
         self.hidden_size=100
         self.mem_max_size=100000
-        self.q = self.build_network().to(device)
-        self.q_target = self.build_network().to(device)
+        self.q = self.build_network(conv).to(device)
+        self.q_target = self.build_network(conv).to(device)
         if model_path and not train:
             self.load_state_dict(torch.load(model_path))
         self.model_path = model_path
@@ -50,25 +53,33 @@ class DQN(nn.Module):
         self.memory = ReplayMemory(capacity=self.mem_max_size)
         self.optimizer = torch.optim.Adam(self.q.parameters())
 
-    def build_network(self):
-        #q_module_list = [nn.GRUCell(input_size=self.input_shape, hidden_size=self.hidden_size, bias=True)]
-        #q_module_list = [nn.Linear(in_features=self.input_shape, out_features=self.hidden_size)]
-        #q_module_list.append(nn.ReLU())
-        #for i in range(3):
-        #    q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.hidden_size))
-        #    q_module_list.append(nn.ReLU())
-        #q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))
-        q_module_list = [nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)]
-        q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
-        q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
-        q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Flatten())
-        for i in range(1):
-            q_module_list.append(nn.Linear(in_features=2688, out_features=self.hidden_size))
+    def _infer_flat_size(self, conv):
+        encoder_output = conv(torch.ones(1, *self.input_shape))
+        return int(np.prod(encoder_output.size()[1:])), encoder_output.size()[1:]
+
+    def build_network(self, conv):
+        if conv:
+            q_module_list = [nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)]
             q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))
+            q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
+            q_module_list.append(nn.ReLU())
+            q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
+            q_module_list.append(nn.ReLU())
+            q_module_list.append(nn.Flatten())
+            test_conv = nn.Sequential(*q_module_list)
+            flat_size = self._infer_flat_size(test_conv)
+            for i in range(1):
+                q_module_list.append(nn.Linear(in_features=flat_size, out_features=self.hidden_size))
+                q_module_list.append(nn.ReLU())
+            q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))
+        else:
+            #q_module_list = [nn.GRUCell(input_size=self.input_shape, hidden_size=self.hidden_size, bias=True)]
+            q_module_list = [nn.Linear(in_features=self.input_shape, out_features=self.hidden_size)]
+            q_module_list.append(nn.ReLU())
+            for i in range(3):
+                q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.hidden_size))
+                q_module_list.append(nn.ReLU())
+            q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))
         return nn.Sequential(*q_module_list)
 
     def optimize_model(self):
