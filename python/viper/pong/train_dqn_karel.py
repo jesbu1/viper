@@ -107,7 +107,7 @@ def learn_q(input_args):
     if not os.path.exists(f"../data/saved_dqn/karel/{env_task}"):
         os.makedirs(f"../data/saved_dqn/karel/{env_task}")
     model_path = f'../data/saved_dqn/karel/{env_task}/saved_conv'
-    q_func = DQN(env=env, model_path=model_path, train=True)
+    q_func = DQN(env=env, model_path=model_path, train=True, conv=True)
     q_func.interact()
     
 

@@ -151,7 +151,7 @@ def learn_dt(input_args):
     set_file(log_fname)
     
     # Data structures
-    teacher = DQN(env, model_path, train=False)
+    teacher = DQN(env, model_path, train=False, conv=True)
     student = DTPolicy(max_depth)
     state_transformer = lambda x: x
 
