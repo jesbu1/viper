@@ -20,6 +20,7 @@ from ..core.dt import *
 from ..util.log import *
 from collections import Iterable
 import random
+from itertools import product
 
 environments = [
                 'cleanHouse',
@@ -194,16 +195,24 @@ def print_size():
     print(dt.tree.tree_.node_count)
 
 if __name__ == '__main__':
-    input_args = AttrDict(
-        env_task = "stairClimber_sparse",
-        max_depth  = 12,
-        n_batch_rollouts = 10,
-        max_samples = 200000,
-        max_iters = 80,
-        train_frac = 0.8,
-        is_reweight = True,
-        id=0,
-        repeat=0,
-        )
-
-    learn_dt(input_args)
+    max_depth = [6, 12, 15]
+    n_batch_rollouts = [5, 10, 15]
+    max_samples = [100000, 200000, 400000]
+    is_reweight = [True]
+    repeat=[0, 1, 2, 3, 4]
+    grid_search = product(*(environments, max_depth, n_batch_rollouts, max_samples, is_reweight, repeat))
+    for param_config in grid_search:
+        e, d, n, s, i, r = param_config
+        input_args = AttrDict(
+            env_task = e,
+            max_depth  = d,
+            n_batch_rollouts = n,
+            max_samples = s,
+            max_iters = i,
+            train_frac = 0.8,
+            is_reweight = i,
+            id=0,
+            repeat=r,
+            )
+        learn_dt(input_args)
+    
