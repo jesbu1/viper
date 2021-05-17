@@ -58,13 +58,15 @@ class DQN(nn.Module):
         #    q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.hidden_size))
         #    q_module_list.append(nn.ReLU())
         #q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))
-        q_module_list = [nn.Conv2d(in_channels=16, out_channels=32, kernel_size=2)]
+        q_module_list = [nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)]
+        q_module_list.append(nn.ReLU())
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
         q_module_list.append(nn.ReLU())
         q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
         q_module_list.append(nn.ReLU())
         q_module_list.append(nn.Flatten())
         for i in range(1):
-            q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.hidden_size))
+            q_module_list.append(nn.Linear(in_features=2688, out_features=self.hidden_size))
             q_module_list.append(nn.ReLU())
         q_module_list.append(nn.Linear(in_features=self.hidden_size, out_features=self.num_actions))
         return nn.Sequential(*q_module_list)
