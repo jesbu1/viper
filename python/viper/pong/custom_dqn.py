@@ -177,8 +177,13 @@ class DQN(nn.Module):
         torch.save(self.state_dict(), self.model_path)
 
     def predict_q(self, obs):
+        if isinstance(obs, np.ndarray):
+            return self.q(obs)
         return self.q(obs.to(device))
 
     def predict(self, obs):
+        import pdb; pdb.set_trace()
+        if isinstance(obs, np.ndarray):
+            return torch.argmax(self.q(obs), -1)
         acts = torch.argmax(self.q(obs.to(device)), -1)
         return acts
