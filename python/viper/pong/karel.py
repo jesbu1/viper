@@ -23,7 +23,7 @@ import random
 from itertools import product
 
 environments = [
-                'cleanHouse',
+                #'cleanHouse',
                 'fourCorners',
                 'harvester',
                 'randomMaze',
@@ -198,10 +198,11 @@ def print_size():
     print(dt.tree.tree_.node_count)
 
 if __name__ == '__main__':
-    max_depth = [6, 12, 15]
-    n_batch_rollouts = [5, 10, 15]
+    #max_depth = [6, 12, 15]
+    max_depth = [12]
+    n_batch_rollouts = [10]
     max_samples = [100000, 200000, 400000]
-    is_reweight = [True]
+    is_reweight = [False, True]
     grid_search = product(*(environments, max_depth, n_batch_rollouts, max_samples, is_reweight))
     for param_config in grid_search:
         for repeat in range(5):
