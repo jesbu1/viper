@@ -15,9 +15,9 @@
 from karel_env.karel_gym_env import KarelGymEnv
 from ..core.rl import *
 from .karel import *
-from .dqn import *
 from ..core.dt import *
 from ..util.log import *
+from .custom_dqn import DQN
 from collections import Iterable
 import random
 from itertools import product
@@ -147,7 +147,7 @@ def learn_dt(input_args):
     set_file(log_fname)
     
     # Data structures
-    teacher = DQNPolicy(env, model_path, convolutional=False)
+    teacher = DQN(env, model_path, train=False)
     student = DTPolicy(max_depth)
     state_transformer = lambda x: x
 
