@@ -135,7 +135,7 @@ def learn_dt(input_args):
     run_name = _generate_run_name(custom_args, input_args.pop("id"), input_args.pop("repeat"))
     os.mkdir(f"../data/{run_name}")
     log_fname = f'../data/{run_name}/karel_dt.log'
-    model_path = f'../data/{run_name}/saved'
+    model_path = f'../data/saved_dqn/karel/{env_task}/saved'
     n_test_rollouts = 50
     save_dirname = '../tmp/karel'
     save_fname = 'dt_policy.pk'
