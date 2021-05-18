@@ -112,7 +112,8 @@ def learn_q(input_args):
     
 
 if __name__ == '__main__':
-    for env in environments:
-        input_args = AttrDict()
-        input_args.env_task = env
-        learn_q(input_args)
+    import sys
+    env = sys.argv[1]
+    input_args = AttrDict()
+    input_args.env_task = env
+    learn_q(input_args)

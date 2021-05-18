@@ -155,7 +155,7 @@ class DQN(nn.Module):
 
 
     def interact(self):
-        TARGET_UPDATE = 3000
+        TARGET_UPDATE = 5000
         num_timesteps = 0
         while num_timesteps < self.num_timesteps:
             # Initialize the environment and state
