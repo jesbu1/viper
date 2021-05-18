@@ -17,7 +17,8 @@ from ..core.rl import *
 from .karel import *
 from ..core.dt import *
 from ..util.log import *
-from .custom_dqn import DQN
+#from .custom_dqn import DQN
+from .ppo import PPO
 from collections import Iterable
 import random
 from itertools import product
@@ -186,7 +187,7 @@ def learn_dt(input_args):
     set_file(log_fname)
     
     # Data structures
-    teacher = DQN(env, model_path, train=False, conv=True)
+    teacher = PPO(env, model_path, train=False)
     student = DTPolicy(max_depth)
     state_transformer = lambda x: x
 
