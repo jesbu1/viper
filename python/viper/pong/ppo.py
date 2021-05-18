@@ -53,7 +53,7 @@ class RolloutBuffer:
 class ActorCritic(nn.Module):
     def __init__(self, state_dim, action_dim, has_continuous_action_space, action_std_init):
         super(ActorCritic, self).__init__()
-
+        self.state_dim = state_dim
         self.has_continuous_action_space = has_continuous_action_space
 
         if has_continuous_action_space:
@@ -109,7 +109,7 @@ class ActorCritic(nn.Module):
                     )
 
     def _infer_flat_size(self, conv):
-        encoder_output = conv(torch.ones(1, *self.input_shape))
+        encoder_output = conv(torch.ones(1, *self.state_dim))
         return int(np.prod(encoder_output.size()[1:])), encoder_output.size()[1:]
         
     def set_action_std(self, new_action_std):
