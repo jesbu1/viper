@@ -8,7 +8,7 @@ from pathos import multiprocessing
 import traceback
 import time
 import sys
-which_gpus = [1, 2]
+which_gpus = [0, 1, 2, 3]
 max_worker_num = len(which_gpus) * 3
 COMMANDS = [
     "python3 -m viper.pong.train_dqn_karel cleanHouse",
