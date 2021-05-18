@@ -184,14 +184,15 @@ def train_dagger(env, teacher, student, state_transformer, max_iters, n_batch_ro
         # Step 2b: Generate trace using student
         student_trace = get_rollouts(env, wrapped_student, False, n_batch_rollouts, dqn_policy=False)
         #student_obss = [obs for obs, _, _ in student_trace] # no need for state transformer
-        student_obss = [obs[1] for obs, _, _ in student_trace]
+        student_obss = [obs[0] for obs, _, _ in student_trace]
         
         # Step 2c: Query the oracle for supervision
         teacher_qs = teacher.predict_q(student_obss) # at the interface level, order matters, since teacher.predict may run updates
         teacher_acts = teacher.predict(student_obss)
 
         # Step 2d: Add the augmented state-action pairs back to aggregate
-        obss.extend((state_transformer(obs) for obs in student_obss))
+        #obss.extend((state_transformer(obs) for obs in student_obss))
+        obss.extend([obs[1] for obs, _, _ in student_trace]) # no need for state transformer
         acts.extend(teacher_acts)
         qs.extend(teacher_qs)
 
