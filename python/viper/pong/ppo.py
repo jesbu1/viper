@@ -167,6 +167,7 @@ class ActorCritic(nn.Module):
 
 class PPO:
     def __init__(self, env, model_path=None, train=False, gamma=0.99, K_epochs=40, eps_clip=0.2, action_std_init=0.6):
+        self.num_timesteps=1e6
         self.env = env
         self.eval_env = pickle.loads(pickle.dumps(env))
 
