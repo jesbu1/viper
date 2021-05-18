@@ -81,6 +81,7 @@ class ActorCritic(nn.Module):
             flat_size = self._infer_flat_size(test_conv)[0]
             self.actor = nn.Sequential(
                             *q_module_list,
+                            nn.Flatten(),
                             nn.Linear(flat_size, 64),
                             nn.Tanh(),
                             nn.Linear(64, 64),
@@ -101,6 +102,7 @@ class ActorCritic(nn.Module):
         flat_size = self._infer_flat_size(test_conv)[0]
         self.critic = nn.Sequential(
                         *q_module_list,
+                        nn.Flatten()
                         nn.Linear(flat_size, 64),
                         nn.Tanh(),
                         nn.Linear(64, 64),
