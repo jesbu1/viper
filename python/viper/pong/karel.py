@@ -205,8 +205,8 @@ def learn_dt(input_args):
     log('Number of nodes: {}'.format(student.tree.tree_.node_count), INFO)
 
 if __name__ == '__main__':
-    #max_depth = [6, 12, 15]
-    max_depth = [12]
+    max_depth = [6, 12, 15]
+    #max_depth = [12]
     n_batch_rollouts = [10]
     max_samples = [100000, 200000, 400000]
     is_reweight = [False, True]
