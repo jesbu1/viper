@@ -24,6 +24,7 @@ import random
 from itertools import product
 import gym
 from gym.spaces import Box
+import sys
 
 class KarelEnvWrapper(gym.Wrapper):
     def __init__(self, env=None, op=[2, 0, 1]):
@@ -172,9 +173,9 @@ def learn_dt(input_args):
     train_frac = custom_args.train_frac
     is_reweight = custom_args.is_reweight
     run_name = _generate_run_name(custom_args, id, repeat)
-    if not os.path.exists(f"../data/karel/{run_name}"):
-        os.makedirs(f"../data/karel/{run_name}")
-    log_fname = f'../data/karel/{run_name}/karel_dt.log'
+    if not os.path.exists(f"../data/karel/ppo/{run_name}"):
+        os.makedirs(f"../data/karel/ppo/{run_name}")
+    log_fname = f'../data/karel/ppo/{run_name}/karel_dt.log'
     #model_path = f'../data/saved_dqn/karel/{env_task}/saved'
     model_path = f'../data/saved_ppo/karel/{env_task}/saved_conv'
     n_test_rollouts = 50
@@ -210,12 +211,13 @@ if __name__ == '__main__':
     n_batch_rollouts = [10]
     max_samples = [100000, 200000, 400000]
     is_reweight = [False, True]
-    grid_search = product(*(environments, max_depth, n_batch_rollouts, max_samples, is_reweight))
+    #grid_search = product(*(environments, max_depth, n_batch_rollouts, max_samples, is_reweight))
+    grid_search = product(*(max_depth, n_batch_rollouts, max_samples, is_reweight))
     for param_config in grid_search:
         for repeat in range(5):
-            e, d, n, s, i = param_config
+            d, n, s, i = param_config
             input_args = AttrDict(
-                env_task = e,
+                env_task = sys.argv[1],
                 max_depth  = d,
                 n_batch_rollouts = n,
                 max_samples = s,
