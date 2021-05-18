@@ -6,6 +6,7 @@ import torch
 import pickle
 
 import numpy as np
+from ..util.log import *
 device = 'cuda'
 
 Transition = namedtuple('Transition',
@@ -130,7 +131,7 @@ class DQN(nn.Module):
     def reset_hidden(self):
         self.gru_hidden_state = torch.zeros((self.batch_size, self.hidden_size))
 
-    def eval(self, num_evals=10):
+    def eval(self, num_evals=20):
         avg_reward = 0
         for eval in range(num_evals):
             state = torch.from_numpy(self.eval_env.reset()).float().unsqueeze(0)
@@ -191,7 +192,7 @@ class DQN(nn.Module):
                     self.q_target.load_state_dict(self.q.state_dict())
                 if num_timesteps % 10000 == 0:
                     eval_rew = self.eval()
-                    print(f"Timesteps: {num_timesteps}, Eval reward: {eval_rew}")
+                    log(f"Timesteps: {num_timesteps}, Eval reward: {eval_rew}", INFO)
                 if self.epsilon > 0.01:      
                     self.epsilon -= 0.00001
                 if done:
