@@ -243,7 +243,7 @@ class PPO:
         with torch.no_grad():
             state = torch.FloatTensor(state).to(device)
             action, action_logprob = self.policy_old.act(state)
-        return self.policy_old.log_prob
+        return self.policy_old.log_prob.detach().cpu().numpy()
 
     def predict(self, state, train=False):
 
@@ -267,7 +267,7 @@ class PPO:
                 self.buffer.actions.append(action)
                 self.buffer.logprobs.append(action_logprob)
 
-            return action
+            return action.detach().cpu().numpy()
 
 
     def update(self):
