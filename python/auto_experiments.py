@@ -11,12 +11,12 @@ import sys
 which_gpus = [0, 1, 2, 3]
 max_worker_num = len(which_gpus) * 3
 COMMANDS = [
-    "python3 -m viper.pong.ppo cleanHouse",
-    "python3 -m viper.pong.ppo fourCorners",
-    "python3 -m viper.pong.ppo harvester",
-    "python3 -m viper.pong.ppo randomMaze",
-    "python3 -m viper.pong.ppo stairClimber_sparse",
-    "python3 -m viper.pong.ppo topOff",
+    "python3 -m viper.pong.karel cleanHouse",
+    "python3 -m viper.pong.karel fourCorners",
+    "python3 -m viper.pong.karel harvester",
+    "python3 -m viper.pong.karel randomMaze",
+    "python3 -m viper.pong.karel stairClimber_sparse",
+    "python3 -m viper.pong.karel topOff",
 ]
 def _init_device_queue(max_worker_num):
     m = Manager()
