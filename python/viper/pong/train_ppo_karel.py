@@ -20,7 +20,7 @@ from .dqn import *
 from ..core.dt import *
 from ..util.log import *
 from collections import Iterable
-from .custom_dqn import DQN
+from .ppo import PPO
 import random
 import gym
 from gym.spaces import Box
@@ -104,12 +104,12 @@ def learn_q(input_args):
     env = KarelGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
     env = KarelEnvWrapper(env)
-    if not os.path.exists(f"../data/saved_dqn/karel/{env_task}"):
-        os.makedirs(f"../data/saved_dqn/karel/{env_task}")
-    model_path = f'../data/saved_dqn/karel/{env_task}/saved_conv'
-    log_fname = f'../data/saved_dqn/karel/{env_task}/train_conv.log'
+    if not os.path.exists(f"../data/saved_ppo/karel/{env_task}"):
+        os.makedirs(f"../data/saved_ppo/karel/{env_task}")
+    model_path = f'../data/saved_ppo/karel/{env_task}/saved_conv'
+    log_fname = f'../data/saved_ppo/karel/{env_task}/train_conv.log'
     set_file(log_fname)
-    q_func = DQN(env=env, model_path=model_path, train=True, conv=True)
+    q_func = PPO(env=env, model_path=model_path, train=True)
     q_func.interact()
     
 
