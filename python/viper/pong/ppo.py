@@ -330,12 +330,12 @@ class PPO:
     def eval(self, num_evals=20):
         avg_reward = 0
         for eval in range(num_evals):
-            state = torch.from_numpy(self.eval_env.reset()).float().unsqueeze(0)
+            state = self.eval_env.reset()
             cum_reward = 0
             for t in count():
                 action = self.predict(state).view(1, 1)
                 next_state, reward, done, _ = self.eval_env.step(action.item())
-                next_state = torch.from_numpy(next_state).float().unsqueeze(0)
+                next_state = next_state
                 cum_reward += reward
                 
                 # Move to the next state
@@ -351,7 +351,7 @@ class PPO:
         num_timesteps = 0
         while num_timesteps < self.num_timesteps:
             # Initialize the environment and state
-            state = torch.from_numpy(self.env.reset()).float().unsqueeze(0)
+            state = np.expand_dims(self.env.reset(), 0)
             cum_reward = 0
             for t in count():
                 action = self.predict(state, train=True).view(1, 1)
@@ -366,7 +366,7 @@ class PPO:
                     next_state = None
 
                 # Move to the next state
-                state = next_state
+                state = np.expand_dims(next_state, 0)
 
                 # Perform one step of the optimization (on the policy network)
                 if num_timesteps % POLICY_UPDATE == 0:
@@ -381,14 +381,14 @@ class PPO:
     def eval(self, num_evals=20):
         avg_reward = 0
         for eval in range(num_evals):
-            state = torch.from_numpy(self.eval_env.reset()).float().unsqueeze(0)
+            state = np.expand_dims(self.eval_env.reset(), 0)
             cum_reward = 0
             for t in count():
                 # Select and perform an action
                 with torch.no_grad():
                     action = self.predict(state).view(1, 1)
                 next_state, reward, done, _ = self.eval_env.step(action.item())
-                next_state = torch.from_numpy(next_state).float().unsqueeze(0)
+                next_state = np.expand_dims(next_state, 0)
                 cum_reward += reward
                 
                 # Move to the next state
