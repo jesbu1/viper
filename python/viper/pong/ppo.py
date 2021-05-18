@@ -142,6 +142,8 @@ class ActorCritic(nn.Module):
 
         action = dist.sample()
         action_logprob = dist.log_prob(action)
+
+        self.log_prob = dist.logits
         
         return action.detach(), action_logprob.detach()
     
@@ -241,7 +243,7 @@ class PPO:
         with torch.no_grad():
             state = torch.FloatTensor(state).to(device)
             action, action_logprob = self.policy_old.act(state)
-        return action_logprob
+        return self.policy_old.log_prob
 
     def predict(self, state, train=False):
 
