@@ -174,9 +174,10 @@ def learn_dt(input_args):
     if not os.path.exists(f"../data/karel/{run_name}"):
         os.makedirs(f"../data/karel/{run_name}")
     log_fname = f'../data/karel/{run_name}/karel_dt.log'
-    model_path = f'../data/saved_dqn/karel/{env_task}/saved'
+    #model_path = f'../data/saved_dqn/karel/{env_task}/saved'
+    model_path = f'../data/saved_ppo/karel/{env_task}/saved_conv'
     n_test_rollouts = 50
-    save_dirname = '../tmp/karel'
+    save_dirname = f'../data/karel/{run_name}'
     save_fname = 'dt_policy.pk'
     save_viz_fname = 'dt_policy.dot'
     is_train = True
