@@ -18,10 +18,44 @@ from .karel import *
 from ..core.dt import *
 from ..util.log import *
 from .custom_dqn import DQN
-from .train_dqn_karel import KarelEnvWrapper
 from collections import Iterable
 import random
 from itertools import product
+import gym
+from gym.spaces import Box
+
+class KarelEnvWrapper(gym.Wrapper):
+    def __init__(self, env=None, op=[2, 0, 1]):
+        """
+        Transpose observation space for images
+        """
+        gym.Wrapper.__init__(self, env)
+        assert len(op) == 3, "Error: Operation, " + str(op) + ", must be dim3"
+        self.op = op
+        obs_shape = self.observation_space.shape
+        if len(obs_shape) == 3:
+            self.observation_space = Box(
+                self.observation_space.low[0, 0, 0],
+                self.observation_space.high[0, 0, 0], [
+                    obs_shape[self.op[0]], obs_shape[self.op[1]],
+                    obs_shape[self.op[2]]
+                ],
+                dtype=self.observation_space.dtype)
+
+    def step(self, action):
+        ob, reward, done, info = self.env.step(action)
+        perception_vector = self.env._world.get_perception_vector()
+        return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
+
+    def reset(self):
+        ob = self.observation(np.array(self.env.reset(), dtype=np.float32))
+        perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
+        return ob, perception_vector
+
+    def observation(self, ob):
+        if len(self.observation_space.shape) == 3:
+            return np.transpose(ob, (self.op[0], self.op[1], self.op[2]))
+        return ob
 
 environments = [
                 'cleanHouse',
@@ -151,7 +185,7 @@ def learn_dt(input_args):
     set_file(log_fname)
     
     # Data structures
-    teacher = DQN(env, model_path, train=False, conv=True)
+    teacher = DQN(dqn_env, model_path, train=False, conv=True)
     student = DTPolicy(max_depth)
     state_transformer = lambda x: x
 

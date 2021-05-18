@@ -15,6 +15,32 @@
 import numpy as np
 from ..util.log import *
 
+def get_karel_rollout(env, policy, render, dqn_policy=False):
+    obs, done = env.reset(), False
+    rollout = []
+
+    while not done:
+        # Render
+        if render:
+            env.unwrapped.render()
+
+        if dqn_policy:
+            # Action
+            act = policy.predict(np.array([obs[0]]))[0]
+        else:
+            act = policy.predict(np.array([obs[1]]))[0]
+
+        # Step
+        next_obs, rew, done, info = env.step(act)
+
+        # Rollout (s, a, r)
+        rollout.append((obs, act, rew))
+
+        # Update (and remove LazyFrames)
+        obs = next_obs
+
+    return rollout
+
 def get_rollout(env, policy, render):
     obs, done = np.array(env.reset()), False
     rollout = []
@@ -38,10 +64,11 @@ def get_rollout(env, policy, render):
 
     return rollout
 
-def get_rollouts(env, policy, render, n_batch_rollouts):
+def get_rollouts(env, policy, render, n_batch_rollouts, dqn_policy=False):
     rollouts = []
     for i in range(n_batch_rollouts):
-        rollouts.extend(get_rollout(env, policy, render))
+        #1rollouts.extend(get_rollout(env, policy, render))
+        rollouts.extend(get_karel_rollout(env, policy, render, dqn_policy=dqn_policy))
     return rollouts
 
 def _sample(obss, acts, qs, max_pts, is_reweight):
@@ -72,7 +99,8 @@ def test_policy(env, policy, state_transformer, n_test_rollouts):
     wrapped_student = TransformerPolicy(policy, state_transformer)
     cum_rew = 0.0
     for i in range(n_test_rollouts):
-        student_trace = get_rollout(env, wrapped_student, False)
+        #student_trace = get_rollout(env, wrapped_student, False)
+        student_trace = get_karel_rollout(env, wrapped_student, False, dqn_policy=False)
         cum_rew += sum((rew for _, _, rew in student_trace))
     return cum_rew / n_test_rollouts
 
@@ -137,10 +165,12 @@ def train_dagger(env, teacher, student, state_transformer, max_iters, n_batch_ro
     wrapped_student = TransformerPolicy(student, state_transformer)
     
     # Step 1: Generate some supervised traces into the buffer
-    trace = get_rollouts(env, teacher, False, n_batch_rollouts)
-    obss.extend((state_transformer(obs) for obs, _, _ in trace))
+    trace = get_rollouts(env, teacher, False, n_batch_rollouts, dqn_policy=True)
+    #obss.extend((state_transformer(obs) for obs, _, _ in trace)) # change without need for a state transformer
+    obss.extend((state_transformer(obs[1]) for obs, _, _ in trace))
     acts.extend((act for _, act, _ in trace))
-    qs.extend(teacher.predict_q(np.array([obs for obs, _, _ in trace])))
+    #qs.extend(teacher.predict_q(np.array([obs for obs, _, _ in trace]))) # no need for state transformer
+    qs.extend(teacher.predict_q(np.array([obs[0] for obs, _, _ in trace])))
 
     # Step 2: Dagger outer loop
     for i in range(max_iters):
@@ -152,8 +182,9 @@ def train_dagger(env, teacher, student, state_transformer, max_iters, n_batch_ro
         student.train(cur_obss, cur_acts, train_frac)
 
         # Step 2b: Generate trace using student
-        student_trace = get_rollouts(env, wrapped_student, False, n_batch_rollouts)
-        student_obss = [obs for obs, _, _ in student_trace]
+        student_trace = get_rollouts(env, wrapped_student, False, n_batch_rollouts, dqn_policy=False)
+        #student_obss = [obs for obs, _, _ in student_trace] # no need for state transformer
+        student_obss = [obs[0] for obs, _, _ in student_trace]
         
         # Step 2c: Query the oracle for supervision
         teacher_qs = teacher.predict_q(student_obss) # at the interface level, order matters, since teacher.predict may run updates
