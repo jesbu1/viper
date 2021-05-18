@@ -94,7 +94,9 @@ class ActorCritic(nn.Module):
         # critic
         q_module_list = [nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)]
         q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
+        q_module_list.append(nn.ReLU())
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
         q_module_list.append(nn.ReLU())
         #q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
         #q_module_list.append(nn.ReLU())
@@ -347,7 +349,7 @@ class PPO:
         return avg_reward / num_evals
     
     def interact(self):
-        POLICY_UPDATE = 300
+        POLICY_UPDATE = 900
         num_timesteps = 0
         while num_timesteps < self.num_timesteps:
             # Initialize the environment and state
