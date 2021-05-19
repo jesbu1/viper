@@ -31,7 +31,7 @@ class StackFrames(gym.ObservationWrapper):
   #init the new obs space (gym.spaces.Box) low & high bounds as repeat of n_steps. These should have been defined for vizdooom
   
   #Create a return a stack of observations
-    def __init__(self, env, repeat=4):
+    def __init__(self, env, repeat=2):
         super(StackFrames, self).__init__(env)
         self.observation_space = gym.spaces.Box( env.observation_space.low.repeat(repeat, axis=0),
                               env.observation_space.high.repeat(repeat, axis=0),
@@ -48,7 +48,7 @@ class StackFrames(gym.ObservationWrapper):
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
 class VizdoomEnvWrapper(gym.Wrapper):
-    def __init__(self, env=None, shape=[64, 64, 1]):
+    def __init__(self, env=None, shape=[64, 48, 1]):
         """
         Transpose observation space for images
         """

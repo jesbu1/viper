@@ -60,58 +60,30 @@ class ActorCritic(nn.Module):
             self.action_dim = action_dim
             self.action_var = torch.full((action_dim,), action_std_init * action_std_init).to(device)
 
-        # actor
-        if has_continuous_action_space :
-            self.actor = nn.Sequential(
-                            nn.Linear(state_dim, 64),
-                            nn.Tanh(),
-                            nn.Linear(64, 64),
-                            nn.Tanh(),
-                            nn.Linear(64, action_dim),
-                            nn.Tanh()
-                        )
-        else:
-            q_module_list = [nn.Conv2d(in_channels=4, out_channels=32, kernel_size=3)]
-            q_module_list.append(nn.ReLU())
-            q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
-            q_module_list.append(nn.ReLU())
-            q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
-            q_module_list.append(nn.ReLU())
-            q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
-            q_module_list.append(nn.ReLU())
-            #q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
-            #q_module_list.append(nn.ReLU())
-            test_conv = nn.Sequential(*q_module_list)
-            flat_size = self._infer_flat_size(test_conv)[0]
-            self.actor = nn.Sequential(
-                            *q_module_list,
-                            nn.Flatten(),
-                            nn.Linear(flat_size, 64),
-                            nn.Tanh(),
-                            nn.Linear(64, 64),
-                            nn.Tanh(),
-                            nn.Linear(64, action_dim),
-                            nn.Softmax(dim=-1)
-                        )
+        q_module_list = [nn.Conv2d(in_channels=4, out_channels=32, kernel_size=7)]
+        q_module_list.append(nn.ReLU())
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
+        q_module_list.append(nn.ReLU())
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
+        q_module_list.append(nn.ReLU())
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
+        q_module_list.append(nn.ReLU())
+        self.encoder = nn.Sequential(*q_module_list)
+        flat_size = self._infer_flat_size(self.encoder)[0]
+        print(flat_size)
+        self.actor = nn.Sequential(
+                        nn.Flatten(),
+                        nn.Linear(flat_size, 64),
+                        nn.Tanh(),
+                        nn.Linear(64, 64),
+                        nn.Tanh(),
+                        nn.Linear(64, action_dim),
+                        nn.Softmax(dim=-1)
+                    )
 
         
         # critic
-        q_module_list = [nn.Conv2d(in_channels=4, out_channels=32, kernel_size=3)]
-        q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
-        q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
-        q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
-        q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
-        q_module_list.append(nn.ReLU())
-        #q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
-        #q_module_list.append(nn.ReLU())
-        test_conv = nn.Sequential(*q_module_list)
-        flat_size = self._infer_flat_size(test_conv)[0]
         self.critic = nn.Sequential(
-                        *q_module_list,
                         nn.Flatten(),
                         nn.Linear(flat_size, 64),
                         nn.Tanh(),
@@ -139,7 +111,7 @@ class ActorCritic(nn.Module):
     
 
     def act(self, state):
-
+        state = self.encoder(state)
         if self.has_continuous_action_space:
             action_mean = self.actor(state)
             cov_mat = torch.diag(self.action_var).unsqueeze(dim=0)
@@ -157,7 +129,7 @@ class ActorCritic(nn.Module):
     
 
     def evaluate(self, state, action):
-
+        state = self.encoder(state)
         if self.has_continuous_action_space:
             action_mean = self.actor(state)
             
