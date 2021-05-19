@@ -60,13 +60,15 @@ class ActorCritic(nn.Module):
             self.action_dim = action_dim
             self.action_var = torch.full((action_dim,), action_std_init * action_std_init).to(device)
 
-        q_module_list = [nn.Conv2d(in_channels=4, out_channels=32, kernel_size=7)]
+        q_module_list = [nn.Conv2d(in_channels=2, out_channels=32, kernel_size=7)]
         q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
         q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
         q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=3))
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
+        q_module_list.append(nn.ReLU())
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=16, kernel_size=4))
         q_module_list.append(nn.ReLU())
         self.encoder = nn.Sequential(*q_module_list)
         flat_size = self._infer_flat_size(self.encoder)[0]

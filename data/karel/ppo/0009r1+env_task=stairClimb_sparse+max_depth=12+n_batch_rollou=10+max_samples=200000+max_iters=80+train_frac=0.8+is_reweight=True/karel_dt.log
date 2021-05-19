@@ -1,0 +1,571 @@
+Iteration 0/80
+Training student with 147 points
+Train accuracy: 0.6837606837606838
+Test accuracy: 0.7
+Number of nodes: 15
+Student reward: 0.0
+Iteration 1/80
+Training student with 1147 points
+Train accuracy: 0.520174482006543
+Test accuracy: 0.5130434782608696
+Number of nodes: 17
+Student reward: 0.0
+Iteration 2/80
+Training student with 2147 points
+Train accuracy: 0.46884100174723353
+Test accuracy: 0.5186046511627908
+Number of nodes: 19
+Student reward: -0.1
+Iteration 3/80
+Training student with 3053 points
+Train accuracy: 0.4705159705159705
+Test accuracy: 0.5008183306055647
+Number of nodes: 17
+Student reward: 0.0
+Iteration 4/80
+Training student with 4053 points
+Train accuracy: 0.4679210363972856
+Test accuracy: 0.4845869297163995
+Number of nodes: 17
+Student reward: 0.0
+Iteration 5/80
+Training student with 5053 points
+Train accuracy: 0.4777337951509154
+Test accuracy: 0.4886251236399604
+Number of nodes: 19
+Student reward: 0.0
+Iteration 6/80
+Training student with 6053 points
+Train accuracy: 0.4684014869888476
+Test accuracy: 0.4558216350123865
+Number of nodes: 19
+Student reward: 0.0
+Iteration 7/80
+Training student with 7053 points
+Train accuracy: 0.5466146756469337
+Test accuracy: 0.5138199858256556
+Number of nodes: 21
+Student reward: -0.1
+Iteration 8/80
+Training student with 7959 points
+Train accuracy: 0.5223810271713523
+Test accuracy: 0.507537688442211
+Number of nodes: 19
+Student reward: -0.1
+Iteration 9/80
+Training student with 8865 points
+Train accuracy: 0.5259447264523407
+Test accuracy: 0.5375070501974055
+Number of nodes: 23
+Student reward: 0.0
+Iteration 10/80
+Training student with 9865 points
+Train accuracy: 0.5130511910795742
+Test accuracy: 0.5139381652306133
+Number of nodes: 23
+Student reward: 0.0
+Iteration 11/80
+Training student with 10865 points
+Train accuracy: 0.507478140819144
+Test accuracy: 0.5103543488265071
+Number of nodes: 21
+Student reward: 0.0
+Iteration 12/80
+Training student with 11865 points
+Train accuracy: 0.5037926675094817
+Test accuracy: 0.4972608512431521
+Number of nodes: 19
+Student reward: -0.1
+Iteration 13/80
+Training student with 12771 points
+Train accuracy: 0.5038175411119812
+Test accuracy: 0.4911937377690802
+Number of nodes: 19
+Student reward: 0.0
+Iteration 14/80
+Training student with 13771 points
+Train accuracy: 0.4963689179375454
+Test accuracy: 0.4961887477313975
+Number of nodes: 17
+Student reward: 0.0
+Iteration 15/80
+Training student with 14771 points
+Train accuracy: 0.5019465132024373
+Test accuracy: 0.5045685279187817
+Number of nodes: 17
+Student reward: 0.0
+Iteration 16/80
+Training student with 15771 points
+Train accuracy: 0.48937856689917564
+Test accuracy: 0.4985736925515055
+Number of nodes: 21
+Student reward: 0.0
+Iteration 17/80
+Training student with 16771 points
+Train accuracy: 0.49500596302921884
+Test accuracy: 0.4912071535022355
+Number of nodes: 23
+Student reward: 0.0
+Iteration 18/80
+Training student with 17771 points
+Train accuracy: 0.48726786719189646
+Test accuracy: 0.4891701828410689
+Number of nodes: 23
+Student reward: 0.0
+Iteration 19/80
+Training student with 18771 points
+Train accuracy: 0.48568193926478426
+Test accuracy: 0.5059920106524634
+Number of nodes: 21
+Student reward: 0.0
+Iteration 20/80
+Training student with 19771 points
+Train accuracy: 0.48735457764289325
+Test accuracy: 0.48621997471554995
+Number of nodes: 19
+Student reward: -0.1
+Iteration 21/80
+Training student with 20677 points
+Train accuracy: 0.49114321987787923
+Test accuracy: 0.4888781431334623
+Number of nodes: 21
+Student reward: 0.0
+Iteration 22/80
+Training student with 21677 points
+Train accuracy: 0.4822674586240701
+Test accuracy: 0.466789667896679
+Number of nodes: 21
+Student reward: 0.0
+Iteration 23/80
+Training student with 22677 points
+Train accuracy: 0.4843724160740863
+Test accuracy: 0.47971781305114636
+Number of nodes: 19
+Student reward: 0.0
+Iteration 24/80
+Training student with 23677 points
+Train accuracy: 0.48212871548492686
+Test accuracy: 0.4877533783783784
+Number of nodes: 23
+Student reward: -0.1
+Iteration 25/80
+Training student with 24583 points
+Train accuracy: 0.4796094782873996
+Test accuracy: 0.4706121618873297
+Number of nodes: 23
+Student reward: -0.1
+Iteration 26/80
+Training student with 25489 points
+Train accuracy: 0.48521406502868913
+Test accuracy: 0.4862691251471165
+Number of nodes: 21
+Student reward: 0.0
+Iteration 27/80
+Training student with 26489 points
+Train accuracy: 0.47557925534424994
+Test accuracy: 0.4924499811249528
+Number of nodes: 19
+Student reward: 0.0
+Iteration 28/80
+Training student with 27489 points
+Train accuracy: 0.479059615297167
+Test accuracy: 0.49508912331757005
+Number of nodes: 19
+Student reward: 0.0
+Iteration 29/80
+Training student with 28489 points
+Train accuracy: 0.48264665876881224
+Test accuracy: 0.4773604773604774
+Number of nodes: 19
+Student reward: 0.0
+Iteration 30/80
+Training student with 29489 points
+Train accuracy: 0.47827561358145054
+Test accuracy: 0.46931163106137674
+Number of nodes: 19
+Student reward: 0.0
+Iteration 31/80
+Training student with 30489 points
+Train accuracy: 0.47078840555942764
+Test accuracy: 0.46949819612987864
+Number of nodes: 21
+Student reward: 0.0
+Iteration 32/80
+Training student with 31489 points
+Train accuracy: 0.47024731054741775
+Test accuracy: 0.46808510638297873
+Number of nodes: 21
+Student reward: -0.1
+Iteration 33/80
+Training student with 32395 points
+Train accuracy: 0.4646550393579256
+Test accuracy: 0.47383855533261304
+Number of nodes: 23
+Student reward: 0.0
+Iteration 34/80
+Training student with 33395 points
+Train accuracy: 0.46567599940110793
+Test accuracy: 0.48001197784099414
+Number of nodes: 17
+Student reward: -0.1
+Iteration 35/80
+Training student with 34301 points
+Train accuracy: 0.47252186588921286
+Test accuracy: 0.4710683573823058
+Number of nodes: 21
+Student reward: 0.0
+Iteration 36/80
+Training student with 35301 points
+Train accuracy: 0.4631728045325779
+Test accuracy: 0.4635320776094038
+Number of nodes: 21
+Student reward: 0.0
+Iteration 37/80
+Training student with 36301 points
+Train accuracy: 0.4674586776859504
+Test accuracy: 0.4701831703622091
+Number of nodes: 21
+Student reward: 0.0
+Iteration 38/80
+Training student with 37301 points
+Train accuracy: 0.46652144772117965
+Test accuracy: 0.47460125988473395
+Number of nodes: 21
+Student reward: 0.0
+Iteration 39/80
+Training student with 38301 points
+Train accuracy: 0.4675261096605744
+Test accuracy: 0.46025323064874035
+Number of nodes: 19
+Student reward: 0.0
+Iteration 40/80
+Training student with 39301 points
+Train accuracy: 0.4669847328244275
+Test accuracy: 0.4599923673832846
+Number of nodes: 21
+Student reward: 0.0
+Iteration 41/80
+Training student with 40301 points
+Train accuracy: 0.4588399503722084
+Test accuracy: 0.4624736385063888
+Number of nodes: 19
+Student reward: 0.0
+Iteration 42/80
+Training student with 41301 points
+Train accuracy: 0.4644370460048426
+Test accuracy: 0.4564822660694831
+Number of nodes: 21
+Student reward: 0.0
+Iteration 43/80
+Training student with 42301 points
+Train accuracy: 0.46016548463356977
+Test accuracy: 0.45715636449592245
+Number of nodes: 17
+Student reward: 0.0
+Iteration 44/80
+Training student with 43301 points
+Train accuracy: 0.4596420323325635
+Test accuracy: 0.4635723357579956
+Number of nodes: 15
+Student reward: 0.0
+Iteration 45/80
+Training student with 44301 points
+Train accuracy: 0.4604119638826185
+Test accuracy: 0.4586389797991197
+Number of nodes: 19
+Student reward: 0.0
+Iteration 46/80
+Training student with 45301 points
+Train accuracy: 0.46528697571743927
+Test accuracy: 0.45844829489018873
+Number of nodes: 21
+Student reward: 0.0
+Iteration 47/80
+Training student with 46301 points
+Train accuracy: 0.4683315334773218
+Test accuracy: 0.4593456430191124
+Number of nodes: 21
+Student reward: 0.0
+Iteration 48/80
+Training student with 47301 points
+Train accuracy: 0.45917019027484146
+Test accuracy: 0.4600993552478596
+Number of nodes: 19
+Student reward: 0.0
+Iteration 49/80
+Training student with 48301 points
+Train accuracy: 0.46105072463768115
+Test accuracy: 0.46713590725597764
+Number of nodes: 19
+Student reward: 0.0
+Iteration 50/80
+Training student with 49301 points
+Train accuracy: 0.45844320486815415
+Test accuracy: 0.46131224013791705
+Number of nodes: 21
+Student reward: 0.0
+Iteration 51/80
+Training student with 50301 points
+Train accuracy: 0.47313618290258447
+Test accuracy: 0.4690388629360899
+Number of nodes: 19
+Student reward: -0.1
+Iteration 52/80
+Training student with 51207 points
+Train accuracy: 0.47096301720981326
+Test accuracy: 0.46758445616090605
+Number of nodes: 19
+Student reward: 0.0
+Iteration 53/80
+Training student with 52207 points
+Train accuracy: 0.4716868191069077
+Test accuracy: 0.4666730511396284
+Number of nodes: 19
+Student reward: 0.0
+Iteration 54/80
+Training student with 53207 points
+Train accuracy: 0.4661341477739927
+Test accuracy: 0.47293741777861303
+Number of nodes: 17
+Student reward: 0.0
+Iteration 55/80
+Training student with 54207 points
+Train accuracy: 0.47252392482416694
+Test accuracy: 0.4732521674967718
+Number of nodes: 21
+Student reward: 0.0
+Iteration 56/80
+Training student with 55207 points
+Train accuracy: 0.46944412996716856
+Test accuracy: 0.4644086216265169
+Number of nodes: 21
+Student reward: 0.0
+Iteration 57/80
+Training student with 56207 points
+Train accuracy: 0.4694540197931725
+Test accuracy: 0.4669987546699875
+Number of nodes: 19
+Student reward: 0.0
+Iteration 58/80
+Training student with 57207 points
+Train accuracy: 0.4721293564951382
+Test accuracy: 0.46495367942667365
+Number of nodes: 21
+Student reward: 0.0
+Iteration 59/80
+Training student with 58207 points
+Train accuracy: 0.46741114571029746
+Test accuracy: 0.47474660711218003
+Number of nodes: 17
+Student reward: 0.0
+Iteration 60/80
+Training student with 59207 points
+Train accuracy: 0.4752454343924839
+Test accuracy: 0.47855092045262626
+Number of nodes: 19
+Student reward: 0.0
+Iteration 61/80
+Training student with 60207 points
+Train accuracy: 0.4678500986193294
+Test accuracy: 0.47492110945025745
+Number of nodes: 21
+Student reward: 0.0
+Iteration 62/80
+Training student with 61207 points
+Train accuracy: 0.4690697436944756
+Test accuracy: 0.47590263028916846
+Number of nodes: 21
+Student reward: 0.0
+Iteration 63/80
+Training student with 62207 points
+Train accuracy: 0.47221943132723804
+Test accuracy: 0.4608583828966404
+Number of nodes: 21
+Student reward: 0.0
+Iteration 64/80
+Training student with 63207 points
+Train accuracy: 0.47093839612380106
+Test accuracy: 0.4621104255655751
+Number of nodes: 21
+Student reward: 0.0
+Iteration 65/80
+Training student with 64207 points
+Train accuracy: 0.4704954735714981
+Test accuracy: 0.469475159632456
+Number of nodes: 19
+Student reward: 0.0
+Iteration 66/80
+Training student with 65207 points
+Train accuracy: 0.4669797757116841
+Test accuracy: 0.4642692838521699
+Number of nodes: 21
+Student reward: 0.0
+Iteration 67/80
+Training student with 66207 points
+Train accuracy: 0.46823373926177664
+Test accuracy: 0.4682072194532548
+Number of nodes: 19
+Student reward: 0.0
+Iteration 68/80
+Training student with 67207 points
+Train accuracy: 0.4688738026597229
+Test accuracy: 0.46362148489808064
+Number of nodes: 19
+Student reward: 0.0
+Iteration 69/80
+Training student with 68207 points
+Train accuracy: 0.46780903509575733
+Test accuracy: 0.46598739187802374
+Number of nodes: 19
+Student reward: 0.0
+Iteration 70/80
+Training student with 69207 points
+Train accuracy: 0.4687979770613203
+Test accuracy: 0.46749024707412223
+Number of nodes: 19
+Student reward: 0.0
+Iteration 71/80
+Training student with 70207 points
+Train accuracy: 0.4675153565387697
+Test accuracy: 0.4704458054408204
+Number of nodes: 21
+Student reward: -0.1
+Iteration 72/80
+Training student with 71113 points
+Train accuracy: 0.4653366145192477
+Test accuracy: 0.4633340364198833
+Number of nodes: 21
+Student reward: 0.0
+Iteration 73/80
+Training student with 72113 points
+Train accuracy: 0.4647772577569769
+Test accuracy: 0.46606115232614576
+Number of nodes: 19
+Student reward: 0.0
+Iteration 74/80
+Training student with 73113 points
+Train accuracy: 0.46478030432552575
+Test accuracy: 0.47240648293783766
+Number of nodes: 19
+Student reward: 0.0
+Iteration 75/80
+Training student with 74113 points
+Train accuracy: 0.46830831506156184
+Test accuracy: 0.4665722188490859
+Number of nodes: 21
+Student reward: -0.1
+Iteration 76/80
+Training student with 75019 points
+Train accuracy: 0.4646505040406565
+Test accuracy: 0.46774193548387094
+Number of nodes: 21
+Student reward: 0.0
+Iteration 77/80
+Training student with 76019 points
+Train accuracy: 0.4673024747184083
+Test accuracy: 0.466193107077085
+Number of nodes: 19
+Student reward: 0.0
+Iteration 78/80
+Training student with 77019 points
+Train accuracy: 0.46577943682544837
+Test accuracy: 0.4660477797974552
+Number of nodes: 19
+Student reward: 0.0
+Iteration 79/80
+Training student with 78019 points
+Train accuracy: 0.464647921172795
+Test accuracy: 0.4709689823122276
+Number of nodes: 19
+Student reward: 0.0
+Initial policy count: 80
+Current policy count: 40
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.06
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.04
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.04
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.04
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.04
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.06
+Reward update: 0.0 -> -0.06
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.06
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.04
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.06
+Reward update: 0.0 -> -0.08
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Current policy count: 20
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.08
+Reward update: 0.0 -> -0.08
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.04
+Reward update: -0.02 -> -0.04
+Reward update: -0.02 -> -0.06
+Reward update: -0.02 -> 0.0
+Reward update: -0.02 -> 0.0
+Reward update: -0.02 -> 0.0
+Reward update: -0.02 -> -0.04
+Reward update: -0.02 -> -0.1
+Reward update: -0.02 -> -0.04
+Current policy count: 10
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.02
+Reward update: 0.0 -> -0.06
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.02
+Reward update: -0.02 -> -0.04
+Current policy count: 5
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> -0.06
+Reward update: 0.0 -> -0.04
+Reward update: 0.0 -> 0.0
+Reward update: -0.02 -> 0.0
+Current policy count: 3
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Current policy count: 2
+Reward update: 0.0 -> 0.0
+Reward update: 0.0 -> 0.0
+Current policy count: 1
+Reward update: 0.0 -> 0.0
+Final reward: 0.0
+Number of nodes: 19

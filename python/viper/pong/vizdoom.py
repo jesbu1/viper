@@ -49,7 +49,7 @@ class StackFrames(gym.ObservationWrapper):
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
 class VizdoomEnvWrapper(gym.Wrapper):
-    def __init__(self, env=None, shape=[64, 48, 1]):
+    def __init__(self, env=None, shape=[48, 64, 1]):
         """
         Transpose observation space for images
         """
