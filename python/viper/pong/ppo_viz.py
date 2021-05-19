@@ -183,7 +183,6 @@ class PPO:
     def __init__(self, env, model_path=None, train=False, gamma=0.99, K_epochs=40, eps_clip=0.2, action_std_init=0.6):
         self.num_timesteps=1e6
         self.env = env
-        self.eval_env = pickle.loads(pickle.dumps(env))
 
         lr_actor = lr_critic = 3e-4
 
@@ -274,7 +273,7 @@ class PPO:
                 self.buffer.states.append(state)
                 self.buffer.actions.append(action)
                 self.buffer.logprobs.append(action_logprob)
-
+                return action.detach().cpu()
             return action.detach().cpu().numpy()
 
 
@@ -342,11 +341,11 @@ class PPO:
     def eval(self, num_evals=20):
         avg_reward = 0
         for eval in range(num_evals):
-            state = self.eval_env.reset()
+            state = self.env.reset()
             cum_reward = 0
             for t in count():
                 action = self.predict(state).view(1, 1)
-                next_state, reward, done, _ = self.eval_env.step(action.item())
+                next_state, reward, done, _ = self.env.step(action.item())
                 next_state = next_state
                 cum_reward += reward
                 
@@ -361,6 +360,7 @@ class PPO:
     def interact(self):
         POLICY_UPDATE = 900
         num_timesteps = 0
+        next_eval=False
         while num_timesteps < self.num_timesteps:
             # Initialize the environment and state
             state = np.expand_dims(self.env.reset(), 0)
@@ -384,22 +384,25 @@ class PPO:
                 if num_timesteps % POLICY_UPDATE == 0:
                     self.update()
                 if num_timesteps % 10000 == 0:
-                    eval_rew = self.eval()
-                    log(f"Timesteps: {num_timesteps}, Eval reward: {eval_rew}", INFO)
+                    next_eval = True
                 if done:
                     break
+            if next_eval:
+                eval_rew = self.eval()
+                log(f"Timesteps: {num_timesteps}, Eval reward: {eval_rew}", INFO)
+                next_eval = False
         self.save(self.model_path)
     
     def eval(self, num_evals=20):
         avg_reward = 0
         for eval in range(num_evals):
-            state = np.expand_dims(self.eval_env.reset(), 0)
+            state = np.expand_dims(self.env.reset(), 0)
             cum_reward = 0
             for t in count():
                 # Select and perform an action
                 with torch.no_grad():
                     action = self.predict(state).view(1, 1)
-                next_state, reward, done, _ = self.eval_env.step(action.item())
+                next_state, reward, done, _ = self.env.step(action.item())
                 next_state = np.expand_dims(next_state, 0)
                 cum_reward += reward
                 

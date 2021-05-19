@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from os import environ
-from vizdoom_env.vizdoom_gym_env import VizdoomGymEnv
+from vizdoom_env.vizdoom_gym_env_wrapper import VizDoomGymEnv
 from ..core.rl import *
 from .karel import *
 from .dqn import *
@@ -31,7 +31,7 @@ class StackFrames(gym.ObservationWrapper):
   #init the new obs space (gym.spaces.Box) low & high bounds as repeat of n_steps. These should have been defined for vizdooom
   
   #Create a return a stack of observations
-    def __init__(self, env, repeat):
+    def __init__(self, env, repeat=4):
         super(StackFrames, self).__init__(env)
         self.observation_space = gym.spaces.Box( env.observation_space.low.repeat(repeat, axis=0),
                               env.observation_space.high.repeat(repeat, axis=0),
@@ -48,20 +48,14 @@ class StackFrames(gym.ObservationWrapper):
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
 class VizdoomEnvWrapper(gym.Wrapper):
-    def __init__(self, env=None, shape=[84, 84, 1]):
+    def __init__(self, env=None, shape=[64, 64, 1]):
         """
         Transpose observation space for images
         """
         gym.Wrapper.__init__(self, env)
         obs_shape = self.observation_space.shape
+        self.shape = (shape[2], shape[0], shape[1])
         if len(obs_shape) == 3:
-            self.observation_space = Box(
-                self.observation_space.low[0, 0, 0],
-                self.observation_space.high[0, 0, 0], [
-                    obs_shape[self.op[0]], obs_shape[self.op[1]],
-                    obs_shape[self.op[2]]
-                ],
-                dtype=self.observation_space.dtype)
             self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
                                         shape=self.shape, dtype=np.float32)
 
@@ -86,7 +80,7 @@ class VizdoomEnvWrapper(gym.Wrapper):
         return new_obs
 
 environments = [
-                'vizdoom_env/assets/default.cfg',
+                'vizdoom_env/asset/default.cfg',
                 ]
 
 class AttrDict(dict):
@@ -106,7 +100,7 @@ def learn_q(input_args):
                 seed=random.randint(0, 100000000))
     config = AttrDict()
     config.update(args) 
-    env = VizdoomGymEnv(config)
+    env = VizDoomGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
     env = VizdoomEnvWrapper(env)
     env = StackFrames(env)
@@ -123,5 +117,5 @@ def learn_q(input_args):
 if __name__ == '__main__':
     import sys
     input_args = AttrDict()
-    input_args.vizdoom_config_file = 'vizdoom_env/assets/default.cfg'
+    input_args.vizdoom_config_file = environments[0]
     learn_q(input_args)
