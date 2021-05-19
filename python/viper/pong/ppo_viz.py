@@ -269,7 +269,7 @@ class PPO:
             with torch.no_grad():
                 state = torch.FloatTensor(state).to(device)
                 action, action_logprob = self.policy_old.act(state)
-            if train: 
+            if train:
                 self.buffer.states.append(state)
                 self.buffer.actions.append(action)
                 self.buffer.logprobs.append(action_logprob)
@@ -341,16 +341,15 @@ class PPO:
     def eval(self, num_evals=20):
         avg_reward = 0
         for eval in range(num_evals):
-            state = self.env.reset()
+            state = np.expand_dims(self.env.reset(), 0)
             cum_reward = 0
             for t in count():
-                action = self.predict(state).view(1, 1)
+                action = self.predict(state)
                 next_state, reward, done, _ = self.env.step(action.item())
-                next_state = next_state
                 cum_reward += reward
                 
                 # Move to the next state
-                state = next_state
+                state = np.expand_dims(next_state, 0)
                 
                 if done:
                     break
@@ -360,7 +359,7 @@ class PPO:
     def interact(self):
         POLICY_UPDATE = 900
         num_timesteps = 0
-        next_eval=False
+        next_eval=True
         while num_timesteps < self.num_timesteps:
             # Initialize the environment and state
             state = np.expand_dims(self.env.reset(), 0)
@@ -392,24 +391,3 @@ class PPO:
                 log(f"Timesteps: {num_timesteps}, Eval reward: {eval_rew}", INFO)
                 next_eval = False
         self.save(self.model_path)
-    
-    def eval(self, num_evals=20):
-        avg_reward = 0
-        for eval in range(num_evals):
-            state = np.expand_dims(self.env.reset(), 0)
-            cum_reward = 0
-            for t in count():
-                # Select and perform an action
-                with torch.no_grad():
-                    action = self.predict(state).view(1, 1)
-                next_state, reward, done, _ = self.env.step(action.item())
-                next_state = np.expand_dims(next_state, 0)
-                cum_reward += reward
-                
-                # Move to the next state
-                state = next_state
-                
-                if done:
-                    break
-            avg_reward += cum_reward
-        return avg_reward / num_evals
