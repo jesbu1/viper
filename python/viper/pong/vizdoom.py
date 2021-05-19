@@ -18,22 +18,42 @@ from .karel import *
 from ..core.dt import *
 from ..util.log import *
 #from .custom_dqn import DQN
-from .ppo import PPO
+from .ppo_viz import PPO
 from collections import Iterable
 import random
 from itertools import product
 import gym
 from gym.spaces import Box
 import sys
+import cv2
+import collections
 
-class KarelEnvWrapper(gym.Wrapper):
-    def __init__(self, env=None, op=[2, 0, 1]):
+class StackFrames(gym.ObservationWrapper):
+  #init the new obs space (gym.spaces.Box) low & high bounds as repeat of n_steps. These should have been defined for vizdooom
+  
+  #Create a return a stack of observations
+    def __init__(self, env, repeat):
+        super(StackFrames, self).__init__(env)
+        self.observation_space = gym.spaces.Box( env.observation_space.low.repeat(repeat, axis=0),
+                              env.observation_space.high.repeat(repeat, axis=0),
+                            dtype=np.float32)
+        self.stack = collections.deque(maxlen=repeat)
+    def reset(self):
+        self.stack.clear()
+        observation = self.env.reset()
+        for _ in range(self.stack.maxlen):
+            self.stack.append(observation)
+        return  np.array(self.stack).reshape(self.observation_space.low.shape)
+    def observation(self, observation):
+        self.stack.append(observation)
+        return np.array(self.stack).reshape(self.observation_space.low.shape)
+
+class VizdoomEnvWrapper(gym.Wrapper):
+    def __init__(self, env=None, shape=[84, 84, 1]):
         """
         Transpose observation space for images
         """
         gym.Wrapper.__init__(self, env)
-        assert len(op) == 3, "Error: Operation, " + str(op) + ", must be dim3"
-        self.op = op
         obs_shape = self.observation_space.shape
         if len(obs_shape) == 3:
             self.observation_space = Box(
@@ -43,47 +63,32 @@ class KarelEnvWrapper(gym.Wrapper):
                     obs_shape[self.op[2]]
                 ],
                 dtype=self.observation_space.dtype)
+            self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
+                                        shape=self.shape, dtype=np.float32)
 
     def step(self, action):
         ob, reward, done, info = self.env.step(action)
-        perception_vector = self.env._world.get_perception_vector()
-        return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
+        #perception_vector = self.env._world.get_perception_vector()
+        #return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
+        return self.observation(ob.astype(np.float32)), float(reward), done, {}
 
     def reset(self):
         ob = self.observation(np.array(self.env.reset(), dtype=np.float32))
-        perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
-        return ob, perception_vector
-
-    def observation(self, ob):
-        if len(self.observation_space.shape) == 3:
-            return np.transpose(ob, (self.op[0], self.op[1], self.op[2]))
+        #perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
+        #return ob, perception_vector
         return ob
 
-environments = [
-                'cleanHouse',
-                'fourCorners',
-                'harvester',
-                'randomMaze',
-                'stairClimber_sparse',
-                'topOff',
-                ]
-env_to_hw = dict(
-    cleanHouse=(14, 22),
-    fourCorners=(12, 12),
-    harvester=(8, 8),
-    randomMaze=(8, 8),
-    stairClimber_sparse=(12, 12),
-    topOff=(12, 12),
-)
-env_to_time = dict(
-    cleanHouse=300,
-    fourCorners=100,
-    harvester=100,
-    randomMaze=100,
-    stairClimber_sparse=100,
-    topOff=100,
-)
+    def observation(self, obs):
+        new_frame = cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY)
+        resized_screen = cv2.resize(new_frame, self.shape[1:],
+                                    interpolation=cv2.INTER_AREA)
+        new_obs = np.array(resized_screen, dtype=np.uint8).reshape(self.shape)
+        new_obs = new_obs / 255.0
+        return new_obs
 
+environments = [
+                'vizdoom_env/assets/default.cfg',
+                ]
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
         super(AttrDict, self).__init__(*args, **kwargs)
@@ -146,22 +151,21 @@ def _generate_run_name(parameters,
 
 def learn_dt(input_args):
     # Parameters
-    env_task = input_args.env_task
+    vizdoom_config_file = input_args.vizdoom_config_file
     args = dict(task_definition='custom_reward',
-                env_task=env_task,
-                max_episode_steps=env_to_time[env_task],
+                env_task='survive',
+                #vizdoom_config_file='vizdoom_env/asset/default.cfg',
+                vizdoom_config_file=vizdoom_config_file,
+                max_episode_steps=100,
                 obv_type='global',
-                wall_prob=0.25,
-                height=env_to_hw[env_task][0],
-                width=env_to_hw[env_task][1],
-                incorrect_marker_penalty=True,
-                delayed_reward=True,
+                delayed_reward=False,
                 seed=random.randint(0, 100000000))
     config = AttrDict()
     config.update(args) 
     env = KarelGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
-    env = KarelEnvWrapper(env)
+    env = VizdoomEnvWrapper(env)
+    env = StackFrames(env)
     custom_args = AttrDict()
     id=input_args.pop("id")
     repeat=input_args.pop("repeat")
@@ -173,13 +177,13 @@ def learn_dt(input_args):
     train_frac = custom_args.train_frac
     is_reweight = custom_args.is_reweight
     run_name = _generate_run_name(custom_args, id, repeat)
-    if not os.path.exists(f"../data/karel/ppo/{run_name}"):
-        os.makedirs(f"../data/karel/ppo/{run_name}")
-    log_fname = f'../data/karel/ppo/{run_name}/karel_dt.log'
+    if not os.path.exists(f"../data/vizdoom/ppo/{run_name}"):
+        os.makedirs(f"../data/vizdoom/ppo/{run_name}")
+    log_fname = f'../data/vizdoom/ppo/{run_name}/karel_dt.log'
     #model_path = f'../data/saved_dqn/karel/{env_task}/saved'
-    model_path = f'../data/saved_ppo/karel/{env_task}/saved_conv'
+    model_path = f'../data/saved_ppo/vizdoom/{vizdoom_config_file.split("/")[-1]}/saved_conv'
     n_test_rollouts = 50
-    save_dirname = f'../data/karel/ppo/{run_name}'
+    save_dirname = f'../data/vizdoom/ppo/{run_name}'
     save_fname = 'dt_policy.pk'
     save_viz_fname = 'dt_policy.dot'
     is_train = True
@@ -217,7 +221,7 @@ if __name__ == '__main__':
         for repeat in range(5):
             d, n, s, i = param_config
             input_args = AttrDict(
-                env_task = sys.argv[1],
+                vizdoom_config_file = sys.argv[1],
                 max_depth  = d,
                 n_batch_rollouts = n,
                 max_samples = s,
