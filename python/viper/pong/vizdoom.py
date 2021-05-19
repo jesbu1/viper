@@ -55,7 +55,7 @@ class VizdoomEnvWrapper(gym.Wrapper):
         """
         gym.Wrapper.__init__(self, env)
         obs_shape = self.observation_space.shape
-        self.shape = (shape[2], shape[0], shape[1])
+        self.shape = (shape[2], shape[1], shape[0])
         if len(obs_shape) == 3:
             self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
                                         shape=self.shape, dtype=np.float32)
