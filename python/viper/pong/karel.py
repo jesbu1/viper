@@ -179,7 +179,7 @@ def learn_dt(input_args):
     #model_path = f'../data/saved_dqn/karel/{env_task}/saved'
     model_path = f'../data/saved_ppo/karel/{env_task}/saved_conv'
     n_test_rollouts = 50
-    save_dirname = f'../data/karel/{run_name}'
+    save_dirname = f'../data/karel/ppo/{run_name}'
     save_fname = 'dt_policy.pk'
     save_viz_fname = 'dt_policy.dot'
     is_train = True
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     is_reweight = [False, True]
     #grid_search = product(*(environments, max_depth, n_batch_rollouts, max_samples, is_reweight))
     grid_search = product(*(max_depth, n_batch_rollouts, max_samples, is_reweight))
-    for param_config in grid_search:
+    for id, param_config in enumerate(grid_search):
         for repeat in range(5):
             d, n, s, i = param_config
             input_args = AttrDict(
@@ -224,7 +224,7 @@ if __name__ == '__main__':
                 max_iters = 80,
                 train_frac = 0.8,
                 is_reweight = i,
-                id=0,
+                id=id,
                 repeat=repeat,
                 )
         learn_dt(input_args)
