@@ -60,7 +60,9 @@ class ActorCritic(nn.Module):
             self.action_dim = action_dim
             self.action_var = torch.full((action_dim,), action_std_init * action_std_init).to(device)
 
-        q_module_list = [nn.Conv2d(in_channels=2, out_channels=32, kernel_size=7)]
+        q_module_list = [nn.Conv2d(in_channels=2, out_channels=32, kernel_size=7, stride=(2, 2))]
+        q_module_list.append(nn.ReLU())
+        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
         q_module_list.append(nn.ReLU())
         q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
         q_module_list.append(nn.ReLU())
@@ -75,9 +77,9 @@ class ActorCritic(nn.Module):
         print(flat_size)
         self.actor = nn.Sequential(
                         nn.Flatten(),
-                        nn.Linear(flat_size, 64),
+                        nn.Linear(flat_size, 512),
                         nn.Tanh(),
-                        nn.Linear(64, 64),
+                        nn.Linear(512, 64),
                         nn.Tanh(),
                         nn.Linear(64, action_dim),
                         nn.Softmax(dim=-1)
@@ -87,9 +89,9 @@ class ActorCritic(nn.Module):
         # critic
         self.critic = nn.Sequential(
                         nn.Flatten(),
-                        nn.Linear(flat_size, 64),
+                        nn.Linear(flat_size, 512),
                         nn.Tanh(),
-                        nn.Linear(64, 64),
+                        nn.Linear(512, 64),
                         nn.Tanh(),
                         nn.Linear(64, 1)
                     )
@@ -312,12 +314,14 @@ class PPO:
         self.policy_old.load_state_dict(torch.load(checkpoint_path, map_location=lambda storage, loc: storage))
         self.policy.load_state_dict(torch.load(checkpoint_path, map_location=lambda storage, loc: storage))
     
-    def eval(self, num_evals=20):
+    def eval(self, num_evals=20, render=False):
         avg_reward = 0
         for eval in range(num_evals):
             state = np.expand_dims(self.env.reset(), 0)
             cum_reward = 0
             for t in count():
+                if render:
+                    self.env.render(mode='rgb_array')
                 action = self.predict(state)
                 next_state, reward, done, _ = self.env.step(action.item())
                 cum_reward += reward
@@ -327,6 +331,8 @@ class PPO:
                 
                 if done:
                     break
+            if render:
+                self.env.render(mode='rgb_array')
             avg_reward += cum_reward
         return avg_reward / num_evals
     

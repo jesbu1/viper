@@ -48,13 +48,12 @@ class StackFrames(gym.ObservationWrapper):
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
 class VizdoomEnvWrapper(gym.Wrapper):
-    def __init__(self, env=None, shape=[64, 48, 1]):
+    def __init__(self, env=None, shape=[48, 64, 1]):
         """
         Transpose observation space for images
         """
         gym.Wrapper.__init__(self, env)
         obs_shape = self.observation_space.shape
-        print(obs_shape)
         self.shape = (shape[2], shape[0], shape[1])
         if len(obs_shape) == 3:
             self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
@@ -62,12 +61,14 @@ class VizdoomEnvWrapper(gym.Wrapper):
 
     def step(self, action):
         ob, reward, done, info = self.env.step(action)
+        self.accumulated_reward += reward
         #perception_vector = self.env._world.get_perception_vector()
         #return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
-        return self.observation(ob.astype(np.float32)), float(reward), done, {}
+        return self.observation(ob.astype(np.float32)), float(self.accumulated_reward) if done else float(0), done, {}
 
     def reset(self):
         ob = self.observation(np.array(self.env.reset(), dtype=np.float32))
+        self.accumulated_reward = 0
         #perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
         #return ob, perception_vector
         return ob

@@ -105,7 +105,7 @@ def learn_q(input_args):
     env._max_episode_steps = config.max_episode_steps
     env = VizdoomEnvWrapper(env)
     env = StackFrames(env)
-    env = gym.wrappers.Monitor(env, directory="../vizdoom_vid_ppo.mp4")
+    env = gym.wrappers.Monitor(env, directory="../vizdoom_vid_ppo", force=True, video_callable=lambda episode_id: True)
     name = vizdoom_config_file.split("/")[-1]
     if not os.path.exists(f"../data/saved_ppo/vizdoom/{vizdoom_config_file}"):
         os.makedirs(f"../data/saved_ppo/vizdoom/{vizdoom_config_file}")
@@ -113,7 +113,7 @@ def learn_q(input_args):
     log_fname = f'../data/saved_ppo/vizdoom/{vizdoom_config_file}/train_conv.log'
     set_file(log_fname)
     q_func = PPO(env=env, model_path=model_path, train=False)
-    q_func.eval()
+    q_func.eval(render=True)
     env.close()
     
 
