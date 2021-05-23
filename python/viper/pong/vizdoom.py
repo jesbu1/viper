@@ -42,11 +42,11 @@ class StackFrames(gym.ObservationWrapper):
         self.stack.clear()
         observation = self.env.reset()
         for _ in range(self.stack.maxlen):
-            self.stack.append(observation)
-        return  np.array(self.stack).reshape(self.observation_space.low.shape)
+            self.stack.append(observation[0])
+        return  np.array(self.stack).reshape(self.observation_space.low.shape), observation[1]
     def observation(self, observation):
-        self.stack.append(observation)
-        return np.array(self.stack).reshape(self.observation_space.low.shape)
+        self.stack.append(observation[0])
+        return np.array(self.stack).reshape(self.observation_space.low.shape), observation[1]
 
 class VizdoomEnvWrapper(gym.Wrapper):
     def __init__(self, env=None, shape=[48, 64, 1]):
@@ -55,22 +55,22 @@ class VizdoomEnvWrapper(gym.Wrapper):
         """
         gym.Wrapper.__init__(self, env)
         obs_shape = self.observation_space.shape
-        self.shape = (shape[2], shape[1], shape[0])
+        self.shape = (shape[2], shape[0], shape[1])
         if len(obs_shape) == 3:
             self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
                                         shape=self.shape, dtype=np.float32)
 
     def step(self, action):
         ob, reward, done, info = self.env.step(action)
-        #perception_vector = self.env._world.get_perception_vector()
-        #return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
-        return self.observation(ob.astype(np.float32)), float(reward), done, {}
+        perception_vector = self.env._world.get_perception_vector()
+        return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
+        #return self.observation(ob.astype(np.float32)), float(reward), done, {}
 
     def reset(self):
         ob = self.observation(np.array(self.env.reset(), dtype=np.float32))
-        #perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
-        #return ob, perception_vector
-        return ob
+        perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
+        return ob, perception_vector
+        #return ob
 
     def observation(self, obs):
         new_frame = cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY)
@@ -171,11 +171,12 @@ def learn_dt(input_args):
     train_frac = custom_args.train_frac
     is_reweight = custom_args.is_reweight
     run_name = _generate_run_name(custom_args, id, repeat)
-    if not os.path.exists(f"../data/vizdoom/ppo/{run_name}"):
-        os.makedirs(f"../data/vizdoom/ppo/{run_name}")
-    log_fname = f'../data/vizdoom/ppo/{run_name}/karel_dt.log'
+    if not os.path.exists(f"../data/vizdoom/ppo/{vizdoom_config_file.split('/')[-1]}/{run_name}"):
+        os.makedirs(f"../data/vizdoom/ppo/{vizdoom_config_file.split('/')[-1]}/{run_name}")
+    log_fname = f'../data/vizdoom/ppo/{vizdoom_config_file.split("/")[-1]}/{run_name}/karel_dt.log'
     #model_path = f'../data/saved_dqn/karel/{env_task}/saved'
-    model_path = f'../data/saved_ppo/vizdoom/{vizdoom_config_file.split("/")[-1]}/saved_conv'
+    #model_path = f'../data/saved_ppo/vizdoom/{vizdoom_config_file.split("/")[-1]}/saved_conv'
+    model_path = f'../data/saved_ppo/vizdoom/{vizdoom_config_file}/saved_conv'
     n_test_rollouts = 50
     save_dirname = f'../data/vizdoom/ppo/{run_name}'
     save_fname = 'dt_policy.pk'
@@ -215,7 +216,7 @@ if __name__ == '__main__':
         for repeat in range(5):
             d, n, s, i = param_config
             input_args = AttrDict(
-                vizdoom_config_file = sys.argv[1],
+                vizdoom_config_file = environments[0],
                 max_depth  = d,
                 n_batch_rollouts = n,
                 max_samples = s,
