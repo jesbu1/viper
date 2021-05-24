@@ -1,52 +1,47 @@
-Package              Version
--------------------- -------------------
-absl-py              0.12.0
-astor                0.8.1
-atari-py             0.2.6
-cached-property      1.5.2
-certifi              2020.12.5
-cloudpickle          1.6.0
-colorlog             5.0.1
-dataclasses          0.8
-dill                 0.3.3
-future               0.18.2
-gast                 0.2.2
-google-pasta         0.2.0
-grpcio               1.37.1
-gym                  0.17.3
-h5py                 3.1.0
-importlib-metadata   4.0.1
-joblib               1.0.1
-Keras-Applications   1.0.8
-Keras-Preprocessing  1.1.2
-Markdown             3.3.4
-multiprocess         0.70.11.1
-numpy                1.19.5
-opencv-python        4.5.2.52
-opt-einsum           3.3.0
-pathos               0.2.7
-Pillow               7.2.0
-pip                  21.0.1
-ply                  3.11
-pox                  0.2.9
-ppft                 1.6.6.3
-progressbar          2.5
-protobuf             3.17.0
-pyglet               1.5.0
-scikit-learn         0.24.2
-scipy                1.5.4
-setuptools           52.0.0.post20210125
-six                  1.16.0
-tensorboard          1.15.0
-tensorflow           1.15.3
-tensorflow-estimator 1.15.1
-termcolor            1.1.0
-threadpoolctl        2.1.0
-torch                1.4.0
-tqdm                 4.60.0
-typing-extensions    3.10.0.0
-vizdoom              1.1.5
-Werkzeug             2.0.0
-wheel                0.36.2
-wrapt                1.12.1
-zipp                 3.4.1
+absl-py==0.12.0
+astor==0.8.1
+atari-py==0.2.6
+cached-property==1.5.2
+certifi==2020.12.5
+cloudpickle==1.6.0
+colorlog==5.0.1
+dataclasses==0.8
+dill==0.3.3
+future==0.18.2
+gast==0.2.2
+google-pasta==0.2.0
+grpcio==1.37.1
+gym==0.17.3
+h5py==3.1.0
+importlib-metadata==4.0.1
+joblib==1.0.1
+Keras-Applications==1.0.8
+Keras-Preprocessing==1.1.2
+Markdown==3.3.4
+multiprocess==0.70.11.1
+numpy==1.19.5
+opencv-python==4.5.2.52
+opt-einsum==3.3.0
+pathos==0.2.7
+Pillow==7.2.0
+ply==3.11
+pox==0.2.9
+ppft==1.6.6.3
+progressbar==2.5
+protobuf==3.17.0
+pyglet==1.5.0
+scikit-learn==0.24.2
+scipy==1.5.4
+six==1.16.0
+tensorboard==1.15.0
+tensorflow==1.15.3
+tensorflow-estimator==1.15.1
+termcolor==1.1.0
+threadpoolctl==2.1.0
+torch==1.4.0
+tqdm==4.60.0
+typing-extensions==3.10.0.0
+vizdoom @ git+https://github.com/HyeonwooNoh/ViZDoomDeterministic.git@79aa27cfacb5d191b44471cd4d34e6584b8b2cdb
+Werkzeug==2.0.0
+wrapt==1.12.1
+zipp==3.4.1
