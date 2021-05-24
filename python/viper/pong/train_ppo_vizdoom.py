@@ -48,7 +48,7 @@ class StackFrames(gym.ObservationWrapper):
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
 class VizdoomEnvWrapper(gym.Wrapper):
-    def __init__(self, env=None, shape=[48, 64, 1]):
+    def __init__(self, env=None, shape=[48, 64, 3]):
         """
         Transpose observation space for images
         """
@@ -74,15 +74,21 @@ class VizdoomEnvWrapper(gym.Wrapper):
         return ob
 
     def observation(self, obs):
-        new_frame = cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY)
-        resized_screen = cv2.resize(new_frame, self.shape[1:],
+        #new_frame = cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY)
+        #resized_screen = cv2.resize(new_frame, self.shape[1:],
+        #                            interpolation=cv2.INTER_AREA)
+        resized_screen = cv2.resize(obs, self.shape[1:],
                                     interpolation=cv2.INTER_AREA)
-        new_obs = np.array(resized_screen, dtype=np.uint8).reshape(self.shape)
+        #new_obs = np.array(resized_screen, dtype=np.uint8).reshape(self.shape)
+        new_obs = np.array(resized_screen, dtype=np.uint8).transpose((2, 1, 0))
         new_obs = new_obs / 255.0
         return new_obs
 
 environments = [
                 'vizdoom_env/asset/default.cfg',
+                'vizdoom_env/asset/scenarios/defend_the_center.cfg',
+                'vizdoom_env/asset/scenarios/deadly_corridor.cfg',
+                'vizdoom_env/asset/scenarios/defend_the_line.cfg',
                 ]
 
 class AttrDict(dict):
@@ -94,7 +100,8 @@ def learn_q(input_args):
     # Parameters
     vizdoom_config_file = input_args.vizdoom_config_file
     args = dict(task_definition='custom_reward',
-                env_task='survive',
+                #env_task='survive',
+                env_task='preloaded',
                 vizdoom_config_file=vizdoom_config_file,
                 max_episode_steps=100,
                 obv_type='global',
@@ -119,5 +126,5 @@ def learn_q(input_args):
 if __name__ == '__main__':
     import sys
     input_args = AttrDict()
-    input_args.vizdoom_config_file = environments[0]
+    input_args.vizdoom_config_file = environments[1]
     learn_q(input_args)

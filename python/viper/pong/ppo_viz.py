@@ -60,13 +60,13 @@ class ActorCritic(nn.Module):
             self.action_dim = action_dim
             self.action_var = torch.full((action_dim,), action_std_init * action_std_init).to(device)
 
-        q_module_list = [nn.Conv2d(in_channels=2, out_channels=32, kernel_size=7, stride=(2, 2))]
+        q_module_list = [nn.Conv2d(in_channels=6, out_channels=64, kernel_size=7, stride=(2, 2))]
         q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
+        q_module_list.append(nn.Conv2d(in_channels=64, out_channels=64, kernel_size=4))
         q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
+        q_module_list.append(nn.Conv2d(in_channels=64, out_channels=64, kernel_size=4))
         q_module_list.append(nn.ReLU())
-        q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
+        q_module_list.append(nn.Conv2d(in_channels=64, out_channels=32, kernel_size=4))
         q_module_list.append(nn.ReLU())
         q_module_list.append(nn.Conv2d(in_channels=32, out_channels=32, kernel_size=4))
         q_module_list.append(nn.ReLU())
