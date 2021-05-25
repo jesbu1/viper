@@ -103,7 +103,7 @@ def learn_q(input_args):
                 #env_task='survive',
                 env_task='preloaded',
                 vizdoom_config_file=vizdoom_config_file,
-                max_episode_steps=100,
+                max_episode_steps=200,
                 obv_type='global',
                 delayed_reward=False,
                 seed=random.randint(0, 100000000))

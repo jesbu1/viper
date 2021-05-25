@@ -27,62 +27,15 @@ from gym.spaces import Box
 import sys
 import cv2
 import collections
-
-class StackFrames(gym.ObservationWrapper):
-  #init the new obs space (gym.spaces.Box) low & high bounds as repeat of n_steps. These should have been defined for vizdooom
-  
-  #Create a return a stack of observations
-    def __init__(self, env, repeat=2):
-        super(StackFrames, self).__init__(env)
-        self.observation_space = gym.spaces.Box( env.observation_space.low.repeat(repeat, axis=0),
-                              env.observation_space.high.repeat(repeat, axis=0),
-                            dtype=np.float32)
-        self.stack = collections.deque(maxlen=repeat)
-    def reset(self):
-        self.stack.clear()
-        observation = self.env.reset()
-        for _ in range(self.stack.maxlen):
-            self.stack.append(observation[0])
-        return  np.array(self.stack).reshape(self.observation_space.low.shape), observation[1]
-    def observation(self, observation):
-        self.stack.append(observation[0])
-        return np.array(self.stack).reshape(self.observation_space.low.shape), observation[1]
-
-class VizdoomEnvWrapper(gym.Wrapper):
-    def __init__(self, env=None, shape=[48, 64, 1]):
-        """
-        Transpose observation space for images
-        """
-        gym.Wrapper.__init__(self, env)
-        obs_shape = self.observation_space.shape
-        self.shape = (shape[2], shape[0], shape[1])
-        if len(obs_shape) == 3:
-            self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
-                                        shape=self.shape, dtype=np.float32)
-
-    def step(self, action):
-        ob, reward, done, info = self.env.step(action)
-        perception_vector = self.env._world.get_perception_vector()
-        return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
-        #return self.observation(ob.astype(np.float32)), float(reward), done, {}
-
-    def reset(self):
-        ob = self.observation(np.array(self.env.reset(), dtype=np.float32))
-        perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
-        return ob, perception_vector
-        #return ob
-
-    def observation(self, obs):
-        new_frame = cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY)
-        resized_screen = cv2.resize(new_frame, self.shape[1:],
-                                    interpolation=cv2.INTER_AREA)
-        new_obs = np.array(resized_screen, dtype=np.uint8).reshape(self.shape)
-        new_obs = new_obs / 255.0
-        return new_obs
+from .train_ppo_vizdoom import StackFrames, VizdoomEnvWrapper
 
 environments = [
                 'vizdoom_env/asset/default.cfg',
+                'vizdoom_env/asset/scenarios/defend_the_center.cfg',
+                'vizdoom_env/asset/scenarios/deadly_corridor.cfg',
+                'vizdoom_env/asset/scenarios/defend_the_line.cfg',
                 ]
+
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
         super(AttrDict, self).__init__(*args, **kwargs)
@@ -150,7 +103,7 @@ def learn_dt(input_args):
                 env_task='survive',
                 #vizdoom_config_file='vizdoom_env/asset/default.cfg',
                 vizdoom_config_file=vizdoom_config_file,
-                max_episode_steps=100,
+                max_episode_steps=200,
                 obv_type='global',
                 delayed_reward=False,
                 seed=random.randint(0, 100000000))
