@@ -100,7 +100,7 @@ def learn_dt(input_args):
     # Parameters
     vizdoom_config_file = input_args.vizdoom_config_file
     args = dict(task_definition='custom_reward',
-                env_task='survive',
+                env_task='preloaded',
                 #vizdoom_config_file='vizdoom_env/asset/default.cfg',
                 vizdoom_config_file=vizdoom_config_file,
                 max_episode_steps=200,
@@ -111,8 +111,8 @@ def learn_dt(input_args):
     config.update(args) 
     env = VizDoomGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
-    env = VizdoomEnvWrapper(env)
-    env = StackFrames(env)
+    env = VizdoomEnvWrapper(env, rl=True)
+    env = StackFrames(env, rl=True)
     custom_args = AttrDict()
     id=input_args.pop("id")
     repeat=input_args.pop("repeat")
