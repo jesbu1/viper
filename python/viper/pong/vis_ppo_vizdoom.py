@@ -51,7 +51,7 @@ def learn_q(input_args):
                 delayed_reward=False,
                 seed=random.randint(0, 100000000))
     config = AttrDict()
-    config.update(args) 
+    config.update(args)
     env = VizDoomGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
     env = VizdoomEnvWrapper(env)
@@ -65,11 +65,10 @@ def learn_q(input_args):
     set_file(log_fname)
     q_func = PPO(env=env, model_path=model_path, train=False)
     q_func.eval(render=True)
-    env.close()
-    
+    env.close() 
 
 if __name__ == '__main__':
     import sys
     input_args = AttrDict()
-    input_args.vizdoom_config_file = environments[1]
+    input_args.vizdoom_config_file = environments[2]
     learn_q(input_args)

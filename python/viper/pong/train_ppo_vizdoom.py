@@ -31,24 +31,34 @@ class StackFrames(gym.ObservationWrapper):
   #init the new obs space (gym.spaces.Box) low & high bounds as repeat of n_steps. These should have been defined for vizdooom
   
   #Create a return a stack of observations
-    def __init__(self, env, repeat=2):
+    def __init__(self, env, repeat=2, rl=False):
         super(StackFrames, self).__init__(env)
         self.observation_space = gym.spaces.Box( env.observation_space.low.repeat(repeat, axis=0),
                               env.observation_space.high.repeat(repeat, axis=0),
                             dtype=np.float32)
         self.stack = collections.deque(maxlen=repeat)
+        self.rl = rl
     def reset(self):
         self.stack.clear()
         observation = self.env.reset()
         for _ in range(self.stack.maxlen):
-            self.stack.append(observation)
-        return  np.array(self.stack).reshape(self.observation_space.low.shape)
+            if self.rl:
+                self.stack.append(observation[0])
+            else:
+                self.stack.append(observation)
+        if self.rl:
+            return np.array(self.stack).reshape(self.observation_space.low.shape), observation[1]
+        return np.array(self.stack).reshape(self.observation_space.low.shape)
+
     def observation(self, observation):
+        if self.rl:
+            self.stack.append(observation[0])
+            return np.array(self.stack).reshape(self.observation_space.low.shape), observation[1]
         self.stack.append(observation)
         return np.array(self.stack).reshape(self.observation_space.low.shape)
 
 class VizdoomEnvWrapper(gym.Wrapper):
-    def __init__(self, env=None, shape=[48, 64, 3]):
+    def __init__(self, env=None, shape=[48, 64, 3], rl=False):
         """
         Transpose observation space for images
         """
@@ -58,19 +68,22 @@ class VizdoomEnvWrapper(gym.Wrapper):
         if len(obs_shape) == 3:
             self.observation_space = gym.spaces.Box(low=0.0, high=1.0,
                                         shape=self.shape, dtype=np.float32)
+        self.rl = rl
 
     def step(self, action):
         ob, reward, done, info = self.env.step(action)
         self.accumulated_reward += reward
-        #perception_vector = self.env._world.get_perception_vector()
-        #return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
+        if self.rl:
+            perception_vector = self.env._world.get_perception_vector()
+            return (self.observation(ob.astype(np.float32)), np.array(perception_vector, dtype=np.float32)), float(reward), done, {}
         return self.observation(ob.astype(np.float32)), float(self.accumulated_reward) if done else float(0), done, {}
 
     def reset(self):
         ob = self.observation(np.array(self.env.reset(), dtype=np.float32))
         self.accumulated_reward = 0
-        #perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
-        #return ob, perception_vector
+        if self.rl:
+            perception_vector = np.array(self.env._world.get_perception_vector(), np.float32)
+            return ob, perception_vector
         return ob
 
     def observation(self, obs):
@@ -103,7 +116,7 @@ def learn_q(input_args):
                 #env_task='survive',
                 env_task='preloaded',
                 vizdoom_config_file=vizdoom_config_file,
-                max_episode_steps=200,
+                max_episode_steps=1000,
                 obv_type='global',
                 delayed_reward=False,
                 seed=random.randint(0, 100000000))
@@ -126,5 +139,5 @@ def learn_q(input_args):
 if __name__ == '__main__':
     import sys
     input_args = AttrDict()
-    input_args.vizdoom_config_file = environments[1]
+    input_args.vizdoom_config_file = environments[2]
     learn_q(input_args)
