@@ -126,5 +126,5 @@ def learn_q(input_args):
 if __name__ == '__main__':
     import sys
     input_args = AttrDict()
-    input_args.vizdoom_config_file = environments[1]
+    input_args.vizdoom_config_file = environments[3]
     learn_q(input_args)

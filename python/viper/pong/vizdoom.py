@@ -169,7 +169,7 @@ if __name__ == '__main__':
         for repeat in range(5):
             d, n, s, i = param_config
             input_args = AttrDict(
-                vizdoom_config_file = environments[0],
+                vizdoom_config_file = environments[-1],
                 max_depth  = d,
                 n_batch_rollouts = n,
                 max_samples = s,

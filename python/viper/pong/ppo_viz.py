@@ -156,7 +156,7 @@ class ActorCritic(nn.Module):
 
 
 class PPO:
-    def __init__(self, env, model_path=None, train=False, gamma=0.99, K_epochs=40, eps_clip=0.2, action_std_init=1.0):
+    def __init__(self, env, model_path=None, train=False, gamma=0.99, K_epochs=80, eps_clip=0.2, action_std_init=0.4):
         self.num_timesteps=1e6
         self.env = env
 
