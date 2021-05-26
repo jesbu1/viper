@@ -1,0 +1,4 @@
+digraph Tree {
+node [shape=box] ;
+0 [label="gini = 0.026\nsamples = 6327\nvalue = [3, 25, 41, 6244, 10, 2, 2]"] ;
+}
