@@ -1,0 +1,36 @@
+digraph Tree {
+node [shape=box] ;
+0 [label="X[3] <= 0.5\ngini = 0.713\nsamples = 41266\nvalue = [17053, 6022, 8018, 307, 9866]"] ;
+1 [label="X[2] <= 0.5\ngini = 0.407\nsamples = 9609\nvalue = [7273, 566, 1083, 101, 586]"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="X[0] <= 0.5\ngini = 0.341\nsamples = 5553\nvalue = [4467, 337, 351, 63, 335]"] ;
+1 -> 2 ;
+3 [label="gini = 0.376\nsamples = 794\nvalue = [619, 60, 76, 6, 33]"] ;
+2 -> 3 ;
+4 [label="gini = 0.335\nsamples = 4759\nvalue = [3848, 277, 275, 57, 302]"] ;
+2 -> 4 ;
+5 [label="X[0] <= 0.5\ngini = 0.482\nsamples = 4056\nvalue = [2806, 229, 732, 38, 251]"] ;
+1 -> 5 ;
+6 [label="gini = 0.598\nsamples = 341\nvalue = [171, 28, 129, 2, 11]"] ;
+5 -> 6 ;
+7 [label="gini = 0.463\nsamples = 3715\nvalue = [2635, 201, 603, 36, 240]"] ;
+5 -> 7 ;
+8 [label="X[2] <= 0.5\ngini = 0.741\nsamples = 31657\nvalue = [9780, 5456, 6935, 206, 9280]"] ;
+0 -> 8 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+9 [label="X[0] <= 0.5\ngini = 0.739\nsamples = 29541\nvalue = [9074, 5340, 5820, 197, 9110]"] ;
+8 -> 9 ;
+10 [label="gini = 0.636\nsamples = 92\nvalue = [2, 18, 45, 0, 27]"] ;
+9 -> 10 ;
+11 [label="gini = 0.739\nsamples = 29449\nvalue = [9072, 5322, 5775, 197, 9083]"] ;
+9 -> 11 ;
+12 [label="X[1] <= 0.5\ngini = 0.602\nsamples = 2116\nvalue = [706, 116, 1115, 9, 170]"] ;
+8 -> 12 ;
+13 [label="X[0] <= 0.5\ngini = 0.619\nsamples = 1696\nvalue = [702, 104, 759, 9, 122]"] ;
+12 -> 13 ;
+14 [label="gini = 0.495\nsamples = 116\nvalue = [2, 9, 77, 0, 28]"] ;
+13 -> 14 ;
+15 [label="gini = 0.61\nsamples = 1580\nvalue = [700, 95, 682, 9, 94]"] ;
+13 -> 15 ;
+16 [label="gini = 0.268\nsamples = 420\nvalue = [4, 12, 356, 0, 48]"] ;
+12 -> 16 ;
+}

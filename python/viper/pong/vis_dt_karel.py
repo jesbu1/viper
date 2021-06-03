@@ -150,6 +150,9 @@ def _generate_run_name(parameters,
 def learn_dt(input_args):
     # Parameters
     env_task = input_args.env_task
+    topOff_config = 0.25
+    extra_suffix = f"{topOff_config}"
+    env_task_metadata = {"mode": "test", "marker_prob": 1, "hash_info": 'pytorch-a2c-ppo-acktr-gail/tasks/topOff_all_states_w_12.pkl', 'train_configs': topOff_config, 'test_configs': 1 - topOff_config}
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
                 max_episode_steps=env_to_time[env_task],
@@ -159,6 +162,9 @@ def learn_dt(input_args):
                 width=env_to_hw[env_task][1],
                 incorrect_marker_penalty=True,
                 delayed_reward=True,
+                perception_noise_prob=0,
+                action_noise_prob=0,
+                env_task_metadata=env_task_metadata,
                 seed=random.randint(0, 100000000))
     config = AttrDict()
     config.update(args) 
@@ -176,7 +182,7 @@ def learn_dt(input_args):
     max_iters = custom_args.max_iters
     train_frac = custom_args.train_frac
     is_reweight = custom_args.is_reweight
-    run_name = _generate_run_name(custom_args, id, repeat)
+    run_name = _generate_run_name(custom_args, id, repeat) + extra_suffix
     #if not os.path.exists(f"../data/karel/ppo/{run_name}"):
     #    os.makedirs(f"../data/karel/ppo/{run_name}")
     #log_fname = f'../data/karel/ppo/{run_name}/karel_dt.log'
@@ -204,7 +210,7 @@ if __name__ == '__main__':
     #for id, param_config in enumerate(grid_search):
     #    for repeat in range(5):
     #        d, n, s, i = param_config
-    d, s, i = 12, 100000, True
+    d, s, i = 15, 100000, False
     input_args = AttrDict(
         env_task = sys.argv[1],
         max_depth  = d,

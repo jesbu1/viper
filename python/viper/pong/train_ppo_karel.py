@@ -89,6 +89,9 @@ class AttrDict(dict):
 def learn_q(input_args):
     # Parameters
     env_task = input_args.env_task
+    topOff_config = 0.50
+    extra_suffix = f"{topOff_config}"
+    env_task_metadata = {"mode": "train", "marker_prob": 1, "hash_info": 'pytorch-a2c-ppo-acktr-gail/tasks/topOff_all_states_w_12.pkl', 'train_configs': topOff_config, 'test_configs': topOff_config}
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
                 max_episode_steps=env_to_time[env_task],
@@ -98,20 +101,22 @@ def learn_q(input_args):
                 width=env_to_hw[env_task][1],
                 incorrect_marker_penalty=True,
                 delayed_reward=True,
+                env_task_metadata=env_task_metadata,
+                perception_noise_prob=0,
+                action_noise_prob=0,
                 seed=random.randint(0, 100000000))
     config = AttrDict()
     config.update(args) 
     env = KarelGymEnv(config)
     env._max_episode_steps = config.max_episode_steps
     env = KarelEnvWrapper(env)
-    if not os.path.exists(f"../data/saved_ppo/karel/{env_task}"):
-        os.makedirs(f"../data/saved_ppo/karel/{env_task}")
-    model_path = f'../data/saved_ppo/karel/{env_task}/saved_conv'
-    log_fname = f'../data/saved_ppo/karel/{env_task}/train_conv.log'
+    if not os.path.exists(f"../data/saved_ppo/karel/{env_task}{extra_suffix}"):
+        os.makedirs(f"../data/saved_ppo/karel/{env_task}{extra_suffix}")
+    model_path = f'../data/saved_ppo/karel/{env_task}{extra_suffix}/saved_conv'
+    log_fname = f'../data/saved_ppo/karel/{env_task}{extra_suffix}/train_conv.log'
     set_file(log_fname)
     q_func = PPO(env=env, model_path=model_path, train=True)
     q_func.interact()
-    
 
 if __name__ == '__main__':
     import sys
