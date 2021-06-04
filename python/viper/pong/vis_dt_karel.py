@@ -71,13 +71,12 @@ env_to_hw = dict(
     cleanHouse=(14, 22),
     fourCorners=(12, 12),
     harvester=(8, 8),
-    #randomMaze=(8, 8),
-    randomMaze=(100, 100),
-    #stairClimber_sparse=(12, 12),
-    stairClimber_sparse=(100, 100),
+    randomMaze=(8, 8),
+    #randomMaze=(100, 100),
+    stairClimber_sparse=(12, 12),
+    #stairClimber_sparse=(100, 100),
     topOff=(12, 12),
 )
-print("STAIRCLIMBER 100x100")
 env_to_time = dict(
     cleanHouse=300,
     fourCorners=100,
@@ -150,9 +149,9 @@ def _generate_run_name(parameters,
 def learn_dt(input_args):
     # Parameters
     env_task = input_args.env_task
-    topOff_config = 0.25
+    topOff_config = 0.1
     extra_suffix = f"{topOff_config}"
-    env_task_metadata = {"mode": "test", "marker_prob": 1, "hash_info": 'pytorch-a2c-ppo-acktr-gail/tasks/topOff_all_states_w_12.pkl', 'train_configs': topOff_config, 'test_configs': 1 - topOff_config}
+    env_task_metadata = {"mode": "test", "marker_prob": 1, "hash_info": 'pytorch-a2c-ppo-acktr-gail/tasks/run2_topOff_all_states_w_12.pkl', 'train_configs': topOff_config, 'test_configs': 1 - topOff_config}
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
                 max_episode_steps=env_to_time[env_task],
@@ -182,12 +181,12 @@ def learn_dt(input_args):
     max_iters = custom_args.max_iters
     train_frac = custom_args.train_frac
     is_reweight = custom_args.is_reweight
-    run_name = _generate_run_name(custom_args, id, repeat) + extra_suffix
+    run_name = _generate_run_name(custom_args, id, repeat) + extra_suffix + extra_suffix
     #if not os.path.exists(f"../data/karel/ppo/{run_name}"):
     #    os.makedirs(f"../data/karel/ppo/{run_name}")
     #log_fname = f'../data/karel/ppo/{run_name}/karel_dt.log'
     #model_path = f'../data/saved_ppo/karel/{env_task}/saved_conv'
-    n_test_rollouts = 10
+    n_test_rollouts = 100
     save_dirname = f'../data/karel/ppo/{run_name}'
     save_fname = 'dt_policy.pk'
     #save_viz_fname = 'dt_policy.dot'
@@ -198,6 +197,7 @@ def learn_dt(input_args):
     rew = test_policy(env, student, state_transformer, n_test_rollouts)
     print('Final reward: {}'.format(rew), INFO)
     print('Number of nodes: {}'.format(student.tree.tree_.node_count), INFO)
+    return rew
 
 if __name__ == '__main__':
     #max_depth = [6, 12, 15]
@@ -210,16 +210,19 @@ if __name__ == '__main__':
     #for id, param_config in enumerate(grid_search):
     #    for repeat in range(5):
     #        d, n, s, i = param_config
+    rewards = []
     d, s, i = 15, 100000, False
-    input_args = AttrDict(
-        env_task = sys.argv[1],
-        max_depth  = d,
-        n_batch_rollouts = 10,
-        max_samples = s,
-        max_iters = 80,
-        train_frac = 0.8,
-        is_reweight = i,
-        id=7,
-        repeat=4,
-        )
-    learn_dt(input_args)
+    for repeat in range(5):
+        input_args = AttrDict(
+            env_task = sys.argv[1],
+            max_depth  = d,
+            n_batch_rollouts = 10,
+            max_samples = s,
+            max_iters = 80,
+            train_frac = 0.8,
+            is_reweight = i,
+            id=0,
+            repeat=5,
+            )
+        rewards.append(learn_dt(input_args))
+    print(f"Final avg reward: {np.mean(rewards)} ({np.std(rewards)})")

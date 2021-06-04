@@ -267,7 +267,8 @@ class PPO:
                 self.buffer.actions.append(action)
                 self.buffer.logprobs.append(action_logprob)
 
-            return action.detach().cpu().numpy()
+            #return action.detach().cpu().numpy()
+            return action.detach().cpu()
 
 
     def update(self):

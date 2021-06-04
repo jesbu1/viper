@@ -147,9 +147,9 @@ def _generate_run_name(parameters,
 def learn_dt(input_args):
     # Parameters
     env_task = input_args.env_task
-    topOff_config=0.75
+    topOff_config=0.1
     extra_suffix = f"{topOff_config}"
-    env_task_metadata = {"mode": "train", "marker_prob": 1, "hash_info": 'pytorch-a2c-ppo-acktr-gail/tasks/topOff_all_states_w_12.pkl', 'train_configs': topOff_config, 'test_configs': 1 - topOff_config}
+    env_task_metadata = {"mode": "train", "marker_prob": 1, "hash_info": 'run2_pytorch-a2c-ppo-acktr-gail/tasks/topOff_all_states_w_12.pkl', 'train_configs': topOff_config, 'test_configs': 1 - topOff_config}
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
                 max_episode_steps=env_to_time[env_task],

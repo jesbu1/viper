@@ -89,9 +89,9 @@ class AttrDict(dict):
 def learn_q(input_args):
     # Parameters
     env_task = input_args.env_task
-    topOff_config = 0.50
+    topOff_config = 0.1
     extra_suffix = f"{topOff_config}"
-    env_task_metadata = {"mode": "train", "marker_prob": 1, "hash_info": 'pytorch-a2c-ppo-acktr-gail/tasks/topOff_all_states_w_12.pkl', 'train_configs': topOff_config, 'test_configs': topOff_config}
+    env_task_metadata = {"mode": "train", "marker_prob": 1, "hash_info": 'viper/pong/pytorch-a2c-ppo-acktr-gail/tasks/run2_topOff_all_states_w_12.pkl', 'train_configs': topOff_config, 'test_configs': topOff_config}
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
                 max_episode_steps=env_to_time[env_task],
