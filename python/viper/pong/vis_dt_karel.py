@@ -25,6 +25,7 @@ from itertools import product
 import gym
 from gym.spaces import Box
 import sys
+import glob
 
 class KarelEnvWrapper(gym.Wrapper):
     def __init__(self, env=None, op=[2, 0, 1]):
@@ -68,22 +69,34 @@ environments = [
                 'topOff',
                 ]
 env_to_hw = dict(
-    cleanHouse=(14, 22),
+    #cleanHouse=(14, 22),
     fourCorners=(12, 12),
-    harvester=(8, 8),
-    randomMaze=(8, 8),
+    #fourCorners=(100, 100),
+    #harvester=(8, 8),
+    harvester=(100, 100),
+    #randomMaze=(8, 8),
     #randomMaze=(100, 100),
-    stairClimber_sparse=(12, 12),
+    #stairClimber_sparse=(12, 12),
     #stairClimber_sparse=(100, 100),
-    topOff=(12, 12),
+    #topOff=(12, 12),
+    topOff=(100, 100),
 )
 env_to_time = dict(
     cleanHouse=300,
-    fourCorners=100,
-    harvester=100,
+    fourCorners=1000,
+    harvester=1000,
     randomMaze=300,
     stairClimber_sparse=100,
-    topOff=100,
+    topOff=1000,
+)
+
+env_to_hp = dict(
+    cleanHouse=(6, 100000, False),
+    fourCorners=(12, 100000, False),
+    harvester=(12, 400000, True),
+    randomMaze=(12, 100000, True),
+    stairClimber_sparse=(12, 400000, True),
+    topOff=(15, 100000, False)
 )
 
 class AttrDict(dict):
@@ -152,8 +165,9 @@ def learn_dt(input_args):
     topOff_config = 0.05
     harvester_config=0.05
     #extra_suffix = f"{topOff_config}"
-    extra_suffix = f"{harvester_config}"
-    env_task_metadata = {"mode": "train", "marker_prob": 1, "hash_info": 'viper/pong/pytorch-a2c-ppo-acktr-gail/tasks/run2_topOff_all_states_w_12.pkl', 'train_configs': 1, 'test_configs': 1 - topOff_config}
+    #extra_suffix = f"{harvester_config}"
+    #env_task_metadata = {"mode": "train", "marker_prob": 1, "hash_info": 'viper/pong/pytorch-a2c-ppo-acktr-gail/tasks/run2_topOff_all_states_w_12.pkl', 'train_configs': 1, 'test_configs': 1 - topOff_config}
+    env_task_metadata = {"mode": "train", "marker_prob": 1, "hash_info": None, 'train_configs': 1, 'test_configs': 1 - topOff_config}
     args = dict(task_definition='custom_reward',
                 env_task=env_task,
                 max_episode_steps=env_to_time[env_task],
@@ -183,16 +197,23 @@ def learn_dt(input_args):
     max_iters = custom_args.max_iters
     train_frac = custom_args.train_frac
     is_reweight = custom_args.is_reweight
-    run_name = _generate_run_name(custom_args, id, repeat) + extra_suffix + extra_suffix
+    #run_name = (_generate_run_name(custom_args, id, repeat) + extra_suffix + extra_suffix)[4:]
+    run_name = (_generate_run_name(custom_args, id, repeat))[4:]
+    glob_thing = f'../data/karel/ppo/*{run_name}'
+    matching_file = glob.glob(glob_thing)[0]
     #if not os.path.exists(f"../data/karel/ppo/{run_name}"):
     #    os.makedirs(f"../data/karel/ppo/{run_name}")
     #log_fname = f'../data/karel/ppo/{run_name}/karel_dt.log'
     #model_path = f'../data/saved_ppo/karel/{env_task}/saved_conv'
     n_test_rollouts = 100
-    save_dirname = f'../data/karel/ppo/{run_name}'
+    save_dirname = matching_file
     save_fname = 'dt_policy.pk'
     #save_viz_fname = 'dt_policy.dot'
-    student = load_dt_policy(save_dirname, save_fname)
+    try:
+        student = load_dt_policy(save_dirname, save_fname)
+    except FileNotFoundError as e:
+        print(e)
+        return None
 
     # Test student
     state_transformer = lambda x: x
@@ -213,7 +234,7 @@ if __name__ == '__main__':
     #    for repeat in range(5):
     #        d, n, s, i = param_config
     rewards = []
-    d, s, i = 15, 100000, False
+    d, s, i = env_to_hp[sys.argv[1]]
     for repeat in range(5):
         input_args = AttrDict(
             env_task = sys.argv[1],
@@ -226,5 +247,7 @@ if __name__ == '__main__':
             id=0,
             repeat=repeat,
             )
-        rewards.append(learn_dt(input_args))
+        reward = learn_dt(input_args)
+        if reward is not None:
+            rewards.append(reward)
     print(f"Final avg reward: {np.mean(rewards)} ({np.std(rewards)})")
